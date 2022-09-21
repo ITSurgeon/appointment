@@ -1,10 +1,10 @@
 {
   "name": "appointment",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Medical appointment backend project using NestJS+TypeORM+PostgreSQL ",
+  "author": "ITSurgeon<stookal@gmail.com>",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
