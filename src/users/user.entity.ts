@@ -8,6 +8,9 @@ class User {
   @Column({ unique: true })
   public email: string;
 
+  @Column()
+  public passwordHash: string;
+
   @Column({ default: false })
   public emailConfirmed: boolean;
 
