@@ -5,19 +5,22 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  Unique,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+export const UNIQUE_USER_EMAIL_CONSTRAINT = 'unique_user_email_constraint';
 
 @Entity()
+@Unique(UNIQUE_USER_EMAIL_CONSTRAINT, ['email'])
 export default class User {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Column({ unique: true })
+  @Column({ name: 'email', unique: true })
   public email: string;
 
   @Column()
-  // @Exclude()
+  @Exclude()
   public password: string;
 
   // @Column({ default: false })

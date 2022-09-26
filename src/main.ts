@@ -11,6 +11,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
   const configService = app.get(ConfigService);
   app.use(passport.initialize());
   app.enableCors({
