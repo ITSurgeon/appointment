@@ -1,7 +1,11 @@
 import { Module } from '@nestjs/common';
+import { UsersModule } from './users/users.module';
+import { AuthenticationModule } from './authentication/authentication.module';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from '@hapi/joi';
 import { DatabaseModule } from './database/database.module';
+// import { UsersService } from './users/users.service';
+// import { AuthenticationService } from './authentication/authentication.service';
 
 @Module({
   imports: [
@@ -16,6 +20,8 @@ import { DatabaseModule } from './database/database.module';
       }),
     }),
     DatabaseModule,
+    AuthenticationModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [],

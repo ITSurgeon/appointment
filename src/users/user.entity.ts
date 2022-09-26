@@ -1,7 +1,15 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity()
-class User {
+export default class User {
   @PrimaryGeneratedColumn()
   public id: number;
 
@@ -9,31 +17,47 @@ class User {
   public email: string;
 
   @Column()
-  public passwordHash: string;
+  // @Exclude()
+  public password: string;
 
-  @Column({ default: false })
-  public emailConfirmed: boolean;
-
-  @Column()
-  public firstname: string;
+  // @Column({ default: false })
+  // public emailConfirmed: boolean;
 
   @Column()
-  public lastname: string;
+  public firstName: string;
 
   @Column()
-  public role: string;
+  public lastName: string;
+
+  // @Column()
+  // public role: string;
 
   @Column({ nullable: true })
   public phoneNumber?: string;
 
-  @Column({ default: false })
-  public phoneNumberConfirmed: boolean;
+  // @Column({ default: false })
+  // public phoneNumberConfirmed: boolean;
+  //
+  // @Column({ nullable: true })
+  // public stars?: number;
+  //
+  // @Column({ nullable: true })
+  // public birthday?: Date;
+  //
+  // @Column()
+  // @CreateDateColumn()
+  // createdAt: Date;
+  //
+  // @Column()
+  // @UpdateDateColumn()
+  // updatedAt: Date;
 
-  @Column({ nullable: true })
-  public stars?: number;
-
-  @Column({ nullable: true })
-  public birthday?: Date;
+  //   @BeforeInsert()
+  //   async hashPassword() {
+  //     this.password = await bcrypt.hash(this.password, 10);
+  //   }
+  //
+  //   async validatePassword(password: string): Promise<boolean> {
+  //     return bcrypt.compare(password, this.password);
+  //   }
 }
-
-export default User;
