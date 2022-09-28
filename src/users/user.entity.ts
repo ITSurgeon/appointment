@@ -12,14 +12,14 @@ export const UNIQUE_USER_EMAIL_CONSTRAINT = 'unique_user_email_constraint';
 
 @Entity()
 @Unique(UNIQUE_USER_EMAIL_CONSTRAINT, ['email'])
-export default class User {
+export class User {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Column({ name: 'email', unique: true })
+  @Column({ name: 'email' })
   public email: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Exclude()
   public password: string;
 
