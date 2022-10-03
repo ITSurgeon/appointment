@@ -1,13 +1,14 @@
 import {
-  BeforeInsert,
   Column,
-  CreateDateColumn,
   Entity,
+  ManyToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
   Unique,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { Service } from '../../services/entities/service.entity';
+import { Category } from '../../categories/entities/category.entity';
+
 export const UNIQUE_USER_EMAIL_CONSTRAINT = 'unique_user_email_constraint';
 
 @Entity()
@@ -34,6 +35,9 @@ export class User {
 
   // @Column()
   // public role: string;
+
+  @Column({ default: false })
+  public isRegisteredWithGoogle: boolean;
 
   @Column({ nullable: true })
   public phoneNumber?: string;
@@ -63,4 +67,10 @@ export class User {
   //   async validatePassword(password: string): Promise<boolean> {
   //     return bcrypt.compare(password, this.password);
   //   }
+
+  @ManyToMany(() => Service, (service: Service) => service.users)
+  public services: Service[];
+
+  @ManyToMany(() => Category, (category: Category) => category.services)
+  public categories: Category[];
 }

@@ -3,8 +3,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import RegisterDto from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import { UNIQUE_USER_EMAIL_CONSTRAINT } from '../users/user.entity';
-import { JwtService } from '@nestjs/jwt';
+import { UNIQUE_USER_EMAIL_CONSTRAINT } from '../users/entities/user.entity';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthenticationService {
@@ -22,8 +22,6 @@ export class AuthenticationService {
         password: hashedPassword,
       });
     } catch (error) {
-      console.log(error.constraint);
-      //UQ_e12875dfb3b1d92d7d7c5377e22
       if (error?.constraint === UNIQUE_USER_EMAIL_CONSTRAINT) {
         throw new HttpException(
           'User with that email already exists',
@@ -38,6 +36,7 @@ export class AuthenticationService {
     try {
       const user = await this.usersService.getByEmail(email);
       await this.verifyPassword(plainTextPassword, user.password);
+      exports: [AuthenticationService, JwtModule];
       return user;
     } catch (error) {
       throw new HttpException(

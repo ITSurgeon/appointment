@@ -1,5 +1,5 @@
 import { UsersService } from '../users/users.service';
-import { User } from '../users/user.entity';
+import { User } from '../users/entities/user.entity';
 import { PassportSerializer } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 
@@ -14,7 +14,7 @@ export class LocalSerializer extends PassportSerializer {
   }
 
   async deserializeUser(userId: string, done: CallableFunction) {
-    const user = await this.usersService.getById(Number(userId))
+    const user = await this.usersService.getById(Number(userId));
     done(null, user);
   }
 }

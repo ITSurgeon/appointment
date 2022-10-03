@@ -48,11 +48,6 @@ export class AuthenticationController {
         return err;
       }
     });
-    request.logOut(function (err) {
-      if (err) {
-        return err;
-      }
-    });
     request.session.cookie.maxAge = 0;
   }
 }
