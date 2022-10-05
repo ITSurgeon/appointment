@@ -1,42 +1,37 @@
-import { UsersService } from '../users/users.service';
+import { UserService } from '../user/user.service';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import RegisterDto from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import { UNIQUE_USER_EMAIL_CONSTRAINT } from '../users/entities/user.entity';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class AuthenticationService {
   constructor(
-    private readonly usersService: UsersService,
+    private readonly userService: UserService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
 
-  public async register(registrationData: RegisterDto) {
-    const hashedPassword = await bcrypt.hash(registrationData.password, 10);
-    try {
-      return await this.usersService.create({
-        ...registrationData,
-        password: hashedPassword,
-      });
-    } catch (error) {
-      if (error?.constraint === UNIQUE_USER_EMAIL_CONSTRAINT) {
-        throw new HttpException(
-          'User with that email already exists',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      throw new Error('Something went wrong');
-    }
+  public async register(registrationData: RegisterDto): Promise<User> {
+    const hashedPassword: string = await bcrypt.hash(
+      registrationData.password,
+      10,
+    );
+    return await this.userService.create({
+      ...registrationData,
+      password: hashedPassword,
+    });
   }
 
-  public async getAuthenticatedUser(email: string, plainTextPassword: string) {
+  public async getAuthenticatedUser(
+    email: string,
+    plainTextPassword: string,
+  ): Promise<User> {
     try {
-      const user = await this.usersService.getByEmail(email);
+      const user: User = await this.userService.getByEmail(email);
       await this.verifyPassword(plainTextPassword, user.password);
-      exports: [AuthenticationService, JwtModule];
       return user;
     } catch (error) {
       throw new HttpException(
@@ -49,16 +44,17 @@ export class AuthenticationService {
   private async verifyPassword(
     plainTextPassword: string,
     hashedPassword: string,
-  ) {
-    const isPasswordMatching = await bcrypt.compare(
+  ): Promise<boolean> {
+    const isPasswordMatching: boolean = await bcrypt.compare(
       plainTextPassword,
       hashedPassword,
     );
-    if (!isPasswordMatching) {
-      throw new HttpException(
-        'Wrong credentials provided',
-        HttpStatus.BAD_REQUEST,
-      );
+    if (isPasswordMatching) {
+      return isPasswordMatching;
     }
+    throw new HttpException(
+      'Wrong credentials provided',
+      HttpStatus.BAD_REQUEST,
+    );
   }
 }

@@ -3,20 +3,22 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
-  Unique,
+  UpdateDateColumn,
 } from 'typeorm';
-import { Category } from '../../categories/entities/category.entity';
-import { User } from '../../users/entities/user.entity';
+import { Service } from '../../service/entity/service.entity';
+import { User } from '../../user/entities/user.entity';
 import { Exclude } from 'class-transformer';
 
-export const UNIQUE_SERVICE_NAME_CONSTRAINT = 'unique_service_name_constraint';
-
 @Entity()
-@Unique(UNIQUE_SERVICE_NAME_CONSTRAINT, ['name'])
-export class Service {
+@Index(['name'], {
+  unique: true,
+  where: '"deletedAt" IS NULL',
+})
+export class Category {
   @PrimaryGeneratedColumn()
   public id: number;
 
@@ -26,11 +28,9 @@ export class Service {
   @Column({ nullable: true })
   public description: string;
 
-  @Column({ nullable: true })
-  public minCost: string;
-
-  @ManyToMany(() => Category, (category: Category) => category.services)
-  public categories: Category[];
+  @ManyToMany(() => Service, (service: Service) => service.categories)
+  @JoinTable()
+  public services: Service[];
 
   @ManyToMany(() => User, (user: User) => user.services)
   @JoinTable()
@@ -39,6 +39,10 @@ export class Service {
   @CreateDateColumn()
   @Exclude()
   public createdAt: Date;
+
+  @UpdateDateColumn()
+  @Exclude()
+  updatedAt: Date;
 
   @DeleteDateColumn()
   @Exclude()

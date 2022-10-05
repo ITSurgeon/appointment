@@ -9,7 +9,7 @@ import { createClient } from 'redis';
 
 const RedisStore = require('connect-redis')(session);
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(

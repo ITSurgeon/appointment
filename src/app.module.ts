@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from './users/users.module';
+import { UserModule } from './user/user.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from '@hapi/joi';
 import { DatabaseModule } from './database/database.module';
-import { CategoriesController } from './categories/categories.controller';
-import { CategoriesService } from './categories/categories.service';
-import { CategoriesModule } from './categories/categories.module';
-import { ServicesModule } from './services/services.module';
+import { CategoryController } from './category/category.controller';
+import { CategoryService } from './category/category.service';
+import { CategoryModule } from './category/category.module';
+import { ServiceModule } from './service/service.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Category } from './categories/entities/category.entity';
+import { Category } from './category/entity/category.entity';
 
 @Module({
   imports: [
@@ -31,11 +31,11 @@ import { Category } from './categories/entities/category.entity';
     }),
     DatabaseModule,
     AuthenticationModule,
-    UsersModule,
-    CategoriesModule,
-    ServicesModule,
+    UserModule,
+    CategoryModule,
+    ServiceModule,
   ],
-  controllers: [CategoriesController],
-  providers: [CategoriesService],
+  controllers: [CategoryController],
+  providers: [CategoryService],
 })
 export class AppModule {}
