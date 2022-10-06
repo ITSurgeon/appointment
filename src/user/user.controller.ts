@@ -1,5 +1,5 @@
 import { UserService } from './user.service';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import CreateUserDto from './dto/createUser.dto';
 
 @Controller('user')
@@ -12,8 +12,12 @@ export class UserController {
   }
 
   @Get()
-  getAll() {
-    return this.userService.getAll();
+  getAll(
+    @Query('offset') offset?: number,
+    @Query('limit') limit?: number,
+    @Query('startId') startId?: number,
+  ) {
+    return this.userService.getAll(offset, limit, startId);
   }
 
   @Get(':id')

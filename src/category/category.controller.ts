@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -21,8 +22,12 @@ export class CategoryController {
   }
 
   @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  findAll(
+    @Query('offset') offset?: number,
+    @Query('limit') limit?: number,
+    @Query('startId') startId?: number,
+  ) {
+    return this.categoryService.findAll(offset, limit, startId);
   }
 
   @Get(':id')

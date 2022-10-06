@@ -6,7 +6,14 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entity/category.entity';
-import { DeepPartial, DeleteResult, Repository, UpdateResult } from 'typeorm';
+import {
+  DeepPartial,
+  DeleteResult,
+  FindManyOptions,
+  MoreThan,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 
 @Injectable()
 export class CategoryService {
@@ -29,10 +36,29 @@ export class CategoryService {
     return await this.categoryRepository.save(definition);
   }
 
-  async findAll(): Promise<Category[]> {
-    return await this.categoryRepository.find({
+  async findAll(offset?: number, limit?: number, startId?: number) {
+    const where: FindManyOptions<Category>['where'] = {};
+    let separateCount = 0;
+    if (startId) {
+      where.id = MoreThan(startId);
+      separateCount = await this.categoryRepository.count();
+    }
+
+    // if (offset || limit) {
+    const [items, count] = await this.categoryRepository.findAndCount({
+      where,
       relations: ['services', 'users'],
+      order: {
+        id: 'ASC',
+      },
+      skip: offset || 0,
+      take: limit || 10,
     });
+
+    return {
+      count: startId ? separateCount : count,
+      items,
+    };
   }
 
   async findOne(id: number): Promise<Category> {

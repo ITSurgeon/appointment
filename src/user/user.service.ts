@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, Repository, FindManyOptions, MoreThan } from 'typeorm';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -10,12 +10,28 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async getAll(): Promise<User[]> {
-    const users: User[] = await this.userRepository.find();
-    if (users) {
-      return users;
+  async getAll(offset?: number, limit?: number, startId?: number) {
+    const where: FindManyOptions<User>['where'] = {};
+    let separateCount = 0;
+    if (startId) {
+      where.id = MoreThan(startId);
+      separateCount = await this.userRepository.count();
     }
-    throw new HttpException('There is no user', HttpStatus.NOT_FOUND);
+
+    const [items, count] = await this.userRepository.findAndCount({
+      where,
+      relations: ['services', 'categories'],
+      order: {
+        id: 'ASC',
+      },
+      skip: offset || 0,
+      take: limit || 10,
+    });
+
+    return {
+      count: startId ? separateCount : count,
+      items,
+    };
   }
 
   async getByEmail(email: string): Promise<User> {

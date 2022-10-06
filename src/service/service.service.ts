@@ -5,8 +5,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, DeleteResult, Repository } from 'typeorm';
+import {
+  DeepPartial,
+  DeleteResult,
+  FindManyOptions,
+  MoreThan,
+  Repository,
+} from 'typeorm';
 import { Service } from './entity/service.entity';
+import { Category } from '../category/entity/category.entity';
 
 @Injectable()
 export class ServiceService {
@@ -29,10 +36,28 @@ export class ServiceService {
     return await this.serviceRepository.save(definition);
   }
 
-  async findAll(): Promise<Service[]> {
-    return await this.serviceRepository.find({
-      relations: ['categories', 'users'],
+  async findAll(offset?: number, limit?: number, startId?: number) {
+    const where: FindManyOptions<Category>['where'] = {};
+    let separateCount = 0;
+    if (startId) {
+      where.id = MoreThan(startId);
+      separateCount = await this.serviceRepository.count();
+    }
+
+    const [items, count] = await this.serviceRepository.findAndCount({
+      where,
+      relations: ['services', 'users'],
+      order: {
+        id: 'ASC',
+      },
+      skip: offset || 0,
+      take: limit || 10,
     });
+
+    return {
+      count: startId ? separateCount : count,
+      items,
+    };
   }
 
   async findOne(id: number): Promise<Service> {
