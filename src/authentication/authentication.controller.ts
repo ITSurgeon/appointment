@@ -29,7 +29,7 @@ export class AuthenticationController {
   @HttpCode(200)
   @UseGuards(LogInWithCredentialsGuard)
   @Post('log-in')
-  async logIn(@Req() request: RequestWithUser): Promise<User> {
+  logIn(@Req() request: RequestWithUser) {
     return request.user;
   }
 

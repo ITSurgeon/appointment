@@ -41,12 +41,13 @@ export class UserService {
   }
 
   async create(definition: DeepPartial<User>): Promise<User> {
-    const candidate: User = await this.userRepository.findOne({
+    const count = await this.userRepository.count({
       where: { email: definition.email },
     });
-    if (candidate) {
+
+    if (count > 0) {
       throw new HttpException(
-        `User with email ${definition.email} already exists, id: ${candidate.id}`,
+        `User with email ${definition.email} already exists`,
         HttpStatus.BAD_REQUEST,
       );
     }

@@ -16,12 +16,13 @@ export class ServiceService {
   ) {}
 
   async create(definition: DeepPartial<Service>): Promise<Service> {
-    const candidate: Service = await this.serviceRepository.findOne({
+    const count = await this.serviceRepository.count({
       where: { name: definition.name },
     });
-    if (candidate) {
+
+    if (count > 0) {
       throw new HttpException(
-        `Service ${definition.name} already exists, id: ${candidate.id}`,
+        `Service ${definition.name} already exists`,
         HttpStatus.BAD_REQUEST,
       );
     }
