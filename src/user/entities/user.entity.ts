@@ -61,19 +61,4 @@ export class User {
     cascade: true,
   })
   public categories: Category[];
-
-  // @Column({ default: false })
-  // public phoneNumberConfirmed: boolean;
-  //
-  // @Column({ nullable: true })
-  // public stars?: number;
-  //
-  // @Column({ nullable: true })
-  // public birthday?: Date
-
-  // @Column({ default: false })
-  // public emailConfirmed: boolean;
-
-  // @Column()
-  // public role: string;
 }

@@ -9,8 +9,6 @@ import { Category } from './entity/category.entity';
 import {
   DeepPartial,
   DeleteResult,
-  FindManyOptions,
-  MoreThan,
   Repository,
   SelectQueryBuilder,
   UpdateResult,

@@ -8,13 +8,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   DeepPartial,
   DeleteResult,
-  FindManyOptions,
-  MoreThan,
   Repository,
   SelectQueryBuilder,
 } from 'typeorm';
 import { Service } from './entity/service.entity';
-import { Category } from '../category/entity/category.entity';
 import { PaginationQuery } from '../common/pagination.query.dto';
 
 @Injectable()
@@ -36,32 +33,6 @@ export class ServiceService {
       );
     }
     return await this.serviceRepository.save(definition);
-  }
-
-  async findAll(offset?: number, limit?: number, startId?: number) {
-    const where: FindManyOptions<Category>['where'] = {};
-    let separateCount = 0;
-    if (startId) {
-      where.id = MoreThan(startId);
-      separateCount = await this.serviceRepository.count();
-    }
-    const builder = this.serviceRepository
-      .createQueryBuilder('vacancy')
-      .where(where);
-    const [items, count] = await this.serviceRepository.findAndCount({
-      where,
-      relations: ['services', 'users'],
-      order: {
-        id: 'ASC',
-      },
-      skip: offset || 0,
-      take: limit || 10,
-    });
-
-    return {
-      count: startId ? separateCount : count,
-      items,
-    };
   }
 
   async search(query: PaginationQuery) {

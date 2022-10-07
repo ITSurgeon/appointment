@@ -11,30 +11,6 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  // async getAll(offset?: number, limit?: number, startId?: number) {
-  //   const where: FindManyOptions<User>['where'] = {};
-  //   let separateCount = 0;
-  //   if (startId) {
-  //     where.id = MoreThan(startId);
-  //     separateCount = await this.userRepository.count();
-  //   }
-  //
-  //   const [items, count] = await this.userRepository.findAndCount({
-  //     where,
-  //     relations: ['services', 'categories'],
-  //     order: {
-  //       id: 'ASC',
-  //     },
-  //     skip: offset || 0,
-  //     take: limit || 10,
-  //   });
-  //
-  //   return {
-  //     count: startId ? separateCount : count,
-  //     items,
-  //   };
-  // }
-
   async search(query: PaginationQuery) {
     const newQuery = { page: 1, limit: 9, ...query };
     const { search, limit, page, ...where } = newQuery;

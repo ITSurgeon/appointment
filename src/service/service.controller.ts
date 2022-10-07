@@ -23,15 +23,6 @@ export class ServiceController {
     return this.serviceService.create(createServiceDto);
   }
 
-  // @Get()
-  // async findAll(
-  //   @Query('offset') offset?: number,
-  //   @Query('limit') limit?: number,
-  //   @Query('startId') startId?: number,
-  // ) {
-  //   return this.serviceService.findAll(offset, limit, startId);
-  // }
-
   @Get()
   async findAll(@Query() query: PaginationQuery) {
     const { totalCount, services } = await this.serviceService.search(query);
