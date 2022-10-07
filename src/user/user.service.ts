@@ -1,7 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, Repository, FindManyOptions, MoreThan } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { PaginationQuery } from '../common/pagination.query.dto';
 
 @Injectable()
 export class UserService {
@@ -10,28 +11,55 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async getAll(offset?: number, limit?: number, startId?: number) {
-    const where: FindManyOptions<User>['where'] = {};
-    let separateCount = 0;
-    if (startId) {
-      where.id = MoreThan(startId);
-      separateCount = await this.userRepository.count();
+  // async getAll(offset?: number, limit?: number, startId?: number) {
+  //   const where: FindManyOptions<User>['where'] = {};
+  //   let separateCount = 0;
+  //   if (startId) {
+  //     where.id = MoreThan(startId);
+  //     separateCount = await this.userRepository.count();
+  //   }
+  //
+  //   const [items, count] = await this.userRepository.findAndCount({
+  //     where,
+  //     relations: ['services', 'categories'],
+  //     order: {
+  //       id: 'ASC',
+  //     },
+  //     skip: offset || 0,
+  //     take: limit || 10,
+  //   });
+  //
+  //   return {
+  //     count: startId ? separateCount : count,
+  //     items,
+  //   };
+  // }
+
+  async search(query: PaginationQuery) {
+    const newQuery = { page: 1, limit: 9, ...query };
+    const { search, limit, page, ...where } = newQuery;
+    const skip = (page - 1) * limit;
+
+    const builder = this.userRepository
+      .createQueryBuilder('user')
+      // .leftJoinAndSelect('user.categories', 'categories')
+      // .leftJoinAndSelect('user.services', 'services')
+      .where(where);
+
+    if (search?.trim()?.length > 0) {
+      builder.andWhere('email ilike :search', {
+        search: `%${query.search.trim()}%`,
+      });
     }
 
-    const [items, count] = await this.userRepository.findAndCount({
-      where,
-      relations: ['services', 'categories'],
-      order: {
-        id: 'ASC',
-      },
-      skip: offset || 0,
-      take: limit || 10,
-    });
+    const totalCount = await builder.getCount();
 
-    return {
-      count: startId ? separateCount : count,
-      items,
-    };
+    builder.offset(skip);
+    builder.limit(limit);
+
+    const users: User[] = await builder.getMany();
+
+    return { totalCount, users };
   }
 
   async getByEmail(email: string): Promise<User> {

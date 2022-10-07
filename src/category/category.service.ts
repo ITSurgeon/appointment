@@ -12,8 +12,10 @@ import {
   FindManyOptions,
   MoreThan,
   Repository,
+  SelectQueryBuilder,
   UpdateResult,
 } from 'typeorm';
+import { PaginationQuery } from '../common/pagination.query.dto';
 
 @Injectable()
 export class CategoryService {
@@ -36,29 +38,29 @@ export class CategoryService {
     return await this.categoryRepository.save(definition);
   }
 
-  async findAll(offset?: number, limit?: number, startId?: number) {
-    const where: FindManyOptions<Category>['where'] = {};
-    let separateCount = 0;
-    if (startId) {
-      where.id = MoreThan(startId);
-      separateCount = await this.categoryRepository.count();
+  async search(query: PaginationQuery) {
+    const newQuery = { page: 1, limit: 9, ...query };
+    const { search, limit, page, ...where } = newQuery;
+    const skip = (page - 1) * limit;
+
+    const builder: SelectQueryBuilder<Category> = this.categoryRepository
+      .createQueryBuilder()
+      .where(where);
+
+    if (search?.trim()?.length > 0) {
+      builder.andWhere('name ilike :search', {
+        search: `%${query.search.trim()}%`,
+      });
     }
 
-    // if (offset || limit) {
-    const [items, count] = await this.categoryRepository.findAndCount({
-      where,
-      relations: ['services', 'users'],
-      order: {
-        id: 'ASC',
-      },
-      skip: offset || 0,
-      take: limit || 10,
-    });
+    const totalCount = await builder.getCount();
 
-    return {
-      count: startId ? separateCount : count,
-      items,
-    };
+    builder.offset(skip);
+    builder.limit(limit);
+
+    const categories: Category[] = await builder.getMany();
+
+    return { totalCount, categories };
   }
 
   async findOne(id: number): Promise<Category> {

@@ -11,6 +11,7 @@ import {
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { PaginationQuery } from '../common/pagination.query.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -22,12 +23,16 @@ export class CategoryController {
   }
 
   @Get()
-  findAll(
-    @Query('offset') offset?: number,
-    @Query('limit') limit?: number,
-    @Query('startId') startId?: number,
-  ) {
-    return this.categoryService.findAll(offset, limit, startId);
+  async findAll(@Query() query: PaginationQuery) {
+    const { totalCount, categories } = await this.categoryService.search(query);
+
+    return {
+      data: {
+        categories,
+        totalCount,
+        currentPage: query.page || 1,
+      },
+    };
   }
 
   @Get(':id')

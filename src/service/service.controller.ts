@@ -12,6 +12,7 @@ import { ServiceService } from './service.service';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
 import { Service } from './entity/service.entity';
+import { PaginationQuery } from '../common/pagination.query.dto';
 
 @Controller('service')
 export class ServiceController {
@@ -22,13 +23,26 @@ export class ServiceController {
     return this.serviceService.create(createServiceDto);
   }
 
+  // @Get()
+  // async findAll(
+  //   @Query('offset') offset?: number,
+  //   @Query('limit') limit?: number,
+  //   @Query('startId') startId?: number,
+  // ) {
+  //   return this.serviceService.findAll(offset, limit, startId);
+  // }
+
   @Get()
-  async findAll(
-    @Query('offset') offset?: number,
-    @Query('limit') limit?: number,
-    @Query('startId') startId?: number,
-  ) {
-    return this.serviceService.findAll(offset, limit, startId);
+  async findAll(@Query() query: PaginationQuery) {
+    const { totalCount, services } = await this.serviceService.search(query);
+
+    return {
+      data: {
+        services,
+        totalCount,
+        currentPage: query.page || 1,
+      },
+    };
   }
 
   @Get(':id')

@@ -11,9 +11,11 @@ import {
   FindManyOptions,
   MoreThan,
   Repository,
+  SelectQueryBuilder,
 } from 'typeorm';
 import { Service } from './entity/service.entity';
 import { Category } from '../category/entity/category.entity';
+import { PaginationQuery } from '../common/pagination.query.dto';
 
 @Injectable()
 export class ServiceService {
@@ -43,7 +45,9 @@ export class ServiceService {
       where.id = MoreThan(startId);
       separateCount = await this.serviceRepository.count();
     }
-
+    const builder = this.serviceRepository
+      .createQueryBuilder('vacancy')
+      .where(where);
     const [items, count] = await this.serviceRepository.findAndCount({
       where,
       relations: ['services', 'users'],
@@ -60,6 +64,32 @@ export class ServiceService {
     };
   }
 
+  async search(query: PaginationQuery) {
+    const newQuery = { page: 1, limit: 9, ...query };
+    const { search, limit, page, ...where } = newQuery;
+    const skip = (page - 1) * limit;
+
+    const builder: SelectQueryBuilder<Service> = this.serviceRepository
+      .createQueryBuilder()
+      .where(where);
+
+    if (search?.trim()?.length > 0) {
+      builder.andWhere('name ilike :search', {
+        search: `%${query.search.trim()}%`,
+      });
+    }
+
+    const totalCount = await builder.getCount();
+
+    builder.offset(skip);
+    builder.limit(limit);
+
+    const services: Service[] = await builder.getMany();
+
+    return { totalCount, services };
+  }
+
+  ///////////////////////////////
   async findOne(id: number): Promise<Service> {
     const service: Service | null = await this.serviceRepository.findOne({
       where: { id },
