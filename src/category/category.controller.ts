@@ -12,6 +12,7 @@ import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PaginationQuery } from '../common/pagination.query.dto';
+import { Category } from './entity/category.entity';
 
 @Controller('category')
 export class CategoryController {
@@ -23,7 +24,9 @@ export class CategoryController {
   }
 
   @Get()
-  async findAll(@Query() query: PaginationQuery) {
+  async findAll(@Query() query: PaginationQuery): Promise<{
+    data: { categories: Category[]; totalCount: any; currentPage: number };
+  }> {
     const { totalCount, categories } = await this.categoryService.search(query);
 
     return {

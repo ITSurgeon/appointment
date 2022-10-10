@@ -16,11 +16,7 @@ export class UserService {
     const { search, limit, page, ...where } = newQuery;
     const skip = (page - 1) * limit;
 
-    const builder = this.userRepository
-      .createQueryBuilder('user')
-      // .leftJoinAndSelect('user.categories', 'categories')
-      // .leftJoinAndSelect('user.services', 'services')
-      .where(where);
+    const builder = this.userRepository.createQueryBuilder('user').where(where);
 
     if (search?.trim()?.length > 0) {
       builder.andWhere('email ilike :search', {

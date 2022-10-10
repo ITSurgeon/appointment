@@ -24,7 +24,9 @@ export class ServiceController {
   }
 
   @Get()
-  async findAll(@Query() query: PaginationQuery) {
+  async findAll(@Query() query: PaginationQuery): Promise<{
+    data: { services: Service[]; totalCount: any; currentPage: number };
+  }> {
     const { totalCount, services } = await this.serviceService.search(query);
 
     return {
@@ -37,20 +39,17 @@ export class ServiceController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Service> {
+  findOne(@Param('id') id: string): Promise<Service> {
     return this.serviceService.findOne(+id);
   }
 
   @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateServiceDto: UpdateServiceDto,
-  ) {
+  update(@Param('id') id: string, @Body() updateServiceDto: UpdateServiceDto) {
     return this.serviceService.update(+id, updateServiceDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  remove(@Param('id') id: string) {
     return this.serviceService.remove(+id);
   }
 }

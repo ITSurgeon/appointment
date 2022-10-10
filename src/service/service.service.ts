@@ -35,7 +35,9 @@ export class ServiceService {
     return await this.serviceRepository.save(definition);
   }
 
-  async search(query: PaginationQuery) {
+  async search(
+    query: PaginationQuery,
+  ): Promise<{ services: Service[]; totalCount: any }> {
     const newQuery = { page: 1, limit: 9, ...query };
     const { search, limit, page, ...where } = newQuery;
     const skip = (page - 1) * limit;
@@ -60,7 +62,6 @@ export class ServiceService {
     return { totalCount, services };
   }
 
-  ///////////////////////////////
   async findOne(id: number): Promise<Service> {
     const service: Service | null = await this.serviceRepository.findOne({
       where: { id },
