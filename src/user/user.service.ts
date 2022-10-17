@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { Category } from '../category/entity/category.entity';
 import { EntityService } from '../common/entity.service';
 
 @Injectable()
@@ -16,7 +15,7 @@ export class UserService extends EntityService {
 
   async findManyUsers(
     query,
-  ): Promise<{ entities: Category[]; totalCount: number }> {
+  ): Promise<{ entities: User[]; totalCount: number }> {
     return this.findMany(query, this.userRepository);
   }
 
