@@ -12,7 +12,7 @@ import { ServiceService } from './service.service';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
 import { Service } from './entity/service.entity';
-import { PaginationQuery } from '../common/pagination.query.dto';
+import { FindManyServicesDto } from './dto/find-many-services.dto';
 
 @Controller('service')
 export class ServiceController {
@@ -24,14 +24,14 @@ export class ServiceController {
   }
 
   @Get()
-  async findAll(@Query() query: PaginationQuery): Promise<{
-    data: { services: Service[]; totalCount: any; currentPage: number };
-  }> {
-    const { totalCount, services } = await this.serviceService.search(query);
+  async findMany(@Query() query: FindManyServicesDto) {
+    const { totalCount, entities } = await this.serviceService.findManyServices(
+      query,
+    );
 
     return {
       data: {
-        services,
+        services: entities,
         totalCount,
         currentPage: query.page || 1,
       },

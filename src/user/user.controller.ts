@@ -1,7 +1,7 @@
 import { UserService } from './user.service';
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import CreateUserDto from './dto/createUser.dto';
-import { PaginationQuery } from '../common/pagination.query.dto';
+import CreateUserDto from './dto/create-user.dto';
+import { FindManyUsersDto } from './dto/find-many-users.dto';
 
 @Controller('user')
 export class UserController {
@@ -13,12 +13,14 @@ export class UserController {
   }
 
   @Get()
-  async findAll(@Query() query: PaginationQuery) {
-    const { totalCount, users } = await this.userService.search(query);
+  async findMany(@Query() query: FindManyUsersDto) {
+    const { totalCount, entities } = await this.userService.findManyUsers(
+      query,
+    );
 
     return {
       data: {
-        users,
+        users: entities,
         totalCount,
         currentPage: query.page || 1,
       },

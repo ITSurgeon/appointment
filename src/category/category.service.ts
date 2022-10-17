@@ -6,21 +6,17 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entity/category.entity';
-import {
-  DeepPartial,
-  DeleteResult,
-  Repository,
-  SelectQueryBuilder,
-  UpdateResult,
-} from 'typeorm';
-import { PaginationQuery } from '../common/pagination.query.dto';
+import { DeepPartial, DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { EntityService } from '../common/entity.service';
 
 @Injectable()
-export class CategoryService {
+export class CategoryService extends EntityService {
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
-  ) {}
+  ) {
+    super();
+  }
 
   async create(definition: DeepPartial<Category>): Promise<Category> {
     const count = await this.categoryRepository.count({
@@ -36,29 +32,10 @@ export class CategoryService {
     return await this.categoryRepository.save(definition);
   }
 
-  async search(query: PaginationQuery) {
-    const newQuery = { page: 1, limit: 9, ...query };
-    const { search, limit, page, ...where } = newQuery;
-    const skip = (page - 1) * limit;
-
-    const builder: SelectQueryBuilder<Category> = this.categoryRepository
-      .createQueryBuilder()
-      .where(where);
-
-    if (search?.trim()?.length > 0) {
-      builder.andWhere('name ilike :search', {
-        search: `%${query.search.trim()}%`,
-      });
-    }
-
-    const totalCount = await builder.getCount();
-
-    builder.offset(skip);
-    builder.limit(limit);
-
-    const categories: Category[] = await builder.getMany();
-
-    return { totalCount, categories };
+  async findManyCategories(
+    query,
+  ): Promise<{ entities: Category[]; totalCount: number }> {
+    return await this.findMany(query, this.categoryRepository);
   }
 
   async findOne(id: number): Promise<Category> {
