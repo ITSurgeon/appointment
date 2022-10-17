@@ -6,10 +6,13 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { Category } from './entity/category.entity';
+import { FindManyCategoriesDto } from './dto/find-many-categories.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -21,8 +24,19 @@ export class CategoryController {
   }
 
   @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  async findMany(@Query() query: FindManyCategoriesDto): Promise<{
+    data: { categories: Category[]; totalCount: any; currentPage: number };
+  }> {
+    const { totalCount, entities } =
+      await this.categoryService.findManyCategories(query);
+
+    return {
+      data: {
+        categories: entities,
+        totalCount,
+        currentPage: query.page || 1,
+      },
+    };
   }
 
   @Get(':id')

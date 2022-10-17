@@ -2,20 +2,21 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { EntityService } from '../common/entity.service';
 
 @Injectable()
-export class UserService {
+export class UserService extends EntityService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) {}
+  ) {
+    super();
+  }
 
-  async getAll(): Promise<User[]> {
-    const users: User[] = await this.userRepository.find();
-    if (users) {
-      return users;
-    }
-    throw new HttpException('There is no user', HttpStatus.NOT_FOUND);
+  async findManyUsers(
+    query,
+  ): Promise<{ entities: User[]; totalCount: number }> {
+    return this.findMany(query, this.userRepository);
   }
 
   async getByEmail(email: string): Promise<User> {

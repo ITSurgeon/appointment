@@ -7,13 +7,16 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, DeleteResult, Repository } from 'typeorm';
 import { Service } from './entity/service.entity';
+import { EntityService } from '../common/entity.service';
 
 @Injectable()
-export class ServiceService {
+export class ServiceService extends EntityService {
   constructor(
     @InjectRepository(Service)
     private serviceRepository: Repository<Service>,
-  ) {}
+  ) {
+    super();
+  }
 
   async create(definition: DeepPartial<Service>): Promise<Service> {
     const count = await this.serviceRepository.count({
@@ -29,10 +32,10 @@ export class ServiceService {
     return await this.serviceRepository.save(definition);
   }
 
-  async findAll(): Promise<Service[]> {
-    return await this.serviceRepository.find({
-      relations: ['categories', 'users'],
-    });
+  async findManyServices(
+    query,
+  ): Promise<{ entities: Service[]; totalCount: number }> {
+    return this.findMany(query, this.serviceRepository);
   }
 
   async findOne(id: number): Promise<Service> {

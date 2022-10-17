@@ -1,6 +1,7 @@
 import { UserService } from './user.service';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import CreateUserDto from './dto/createUser.dto';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import CreateUserDto from './dto/create-user.dto';
+import { FindManyUsersDto } from './dto/find-many-users.dto';
 
 @Controller('user')
 export class UserController {
@@ -12,8 +13,18 @@ export class UserController {
   }
 
   @Get()
-  getAll() {
-    return this.userService.getAll();
+  async findMany(@Query() query: FindManyUsersDto) {
+    const { totalCount, entities } = await this.userService.findManyUsers(
+      query,
+    );
+
+    return {
+      data: {
+        users: entities,
+        totalCount,
+        currentPage: query.page || 1,
+      },
+    };
   }
 
   @Get(':id')
@@ -21,13 +32,3 @@ export class UserController {
     return this.userService.getById(+id);
   }
 }
-
-// @Patch(":id")
-// update(@Param("id") id: string, @Body() updateServiceDto: UpdateServiceDto) {
-//   return this.userService.update(+id, updateServiceDto);
-// }
-
-// @Delete(":id")
-// remove(@Param("id") id: string) {
-//   return this.userService.remove(+id);
-// }
