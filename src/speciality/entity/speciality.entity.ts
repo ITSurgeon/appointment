@@ -18,7 +18,7 @@ import { Exclude } from 'class-transformer';
   unique: true,
   where: '"deletedAt" IS NULL',
 })
-export class Category {
+export class Speciality {
   @PrimaryGeneratedColumn()
   public id: number;
 
@@ -28,7 +28,7 @@ export class Category {
   @Column({ nullable: true })
   public description: string;
 
-  @ManyToMany(() => Service, (service: Service) => service.categories)
+  @ManyToMany(() => Service, (service: Service) => service.specialities)
   @JoinTable()
   public services: Service[];
 

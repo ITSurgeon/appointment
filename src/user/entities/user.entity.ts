@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Service } from '../../service/entity/service.entity';
-import { Category } from '../../category/entity/category.entity';
+import { Speciality } from '../../speciality/entity/speciality.entity';
 
 @Entity()
 @Index(['email'], {
@@ -57,8 +57,12 @@ export class User {
   })
   public services: Service[];
 
-  @ManyToMany(() => Category, (category: Category) => category.services, {
-    cascade: true,
-  })
-  public categories: Category[];
+  @ManyToMany(
+    () => Speciality,
+    (speciality: Speciality) => speciality.services,
+    {
+      cascade: true,
+    },
+  )
+  public specialities: Speciality[];
 }

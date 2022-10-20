@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { Category } from '../../category/entity/category.entity';
+import { Speciality } from '../../speciality/entity/speciality.entity';
 import { User } from '../../user/entities/user.entity';
 import { Exclude } from 'class-transformer';
 
@@ -29,8 +29,8 @@ export class Service {
   @Column({ nullable: true })
   public minCost: string;
 
-  @ManyToMany(() => Category, (category: Category) => category.services)
-  public categories: Category[];
+  @ManyToMany(() => Speciality, (speciality: Speciality) => speciality.services)
+  public specialities: Speciality[];
 
   @ManyToMany(() => User, (user: User) => user.services)
   @JoinTable()

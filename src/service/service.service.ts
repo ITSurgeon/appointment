@@ -41,7 +41,7 @@ export class ServiceService extends EntityService {
   async findOne(id: number): Promise<Service> {
     const service: Service | null = await this.serviceRepository.findOne({
       where: { id },
-      relations: ['categories', 'users'],
+      relations: ['specialities', 'users'],
     });
     if (service) {
       return service;
@@ -54,7 +54,7 @@ export class ServiceService extends EntityService {
     const updatedService: Service | null = await this.serviceRepository.findOne(
       {
         where: { id },
-        relations: ['categories'],
+        relations: ['specialities'],
       },
     );
     if (updatedService) {
