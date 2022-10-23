@@ -1,27 +1,29 @@
-import { Repository, SelectQueryBuilder } from 'typeorm';
-
 export class EntityService {
-  async findMany(
-    query,
-    repository: Repository<any>,
-  ): Promise<{ entities: any[]; totalCount: number }> {
-    const newQuery = { page: 1, limit: 9, ...query };
-    const { page, limit, ...filterQuery } = newQuery;
+  paginate(builder, paginationQuery) {
+    const { page, limit } = paginationQuery;
     const skip = (page - 1) * limit;
-
-    const builder: SelectQueryBuilder<any> = repository.createQueryBuilder();
     builder.offset(skip);
     builder.limit(limit);
+    return builder;
+  }
 
-    if (filterQuery && Object.keys(filterQuery).length > 0) {
-      for (const property in filterQuery) {
-        builder.andWhere(`"${property}" ilike :${property}`, {
-          [`${property}`]: `%${filterQuery[property].trim()}%`,
+  filterByRelation(builder, relationsQuery) {
+    for (const relationKey in relationsQuery) {
+      if (relationsQuery[relationKey]) {
+        builder.andWhere(`${relationKey}.id = ANY(:${relationKey}Id)`, {
+          [`${relationKey}Id`]: [relationsQuery[relationKey]],
         });
       }
     }
-    const totalCount = await builder.getCount();
-    const entities = await builder.getMany();
-    return { totalCount, entities };
+    return builder;
+  }
+
+  filterByColumn(builder, columnsQuery) {
+    for (const columnKey in columnsQuery) {
+      builder.andWhere(`"${columnKey}" ilike :${columnKey}`, {
+        [`${columnKey}`]: `%${columnsQuery[columnKey].trim()}%`,
+      });
+    }
+    return builder;
   }
 }

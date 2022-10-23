@@ -4,6 +4,7 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
+  JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -53,16 +54,16 @@ export class User {
   updatedAt: Date;
 
   @ManyToMany(() => Service, (service: Service) => service.users, {
+    eager: true,
     cascade: true,
   })
+  @JoinTable()
   public services: Service[];
 
-  @ManyToMany(
-    () => Speciality,
-    (speciality: Speciality) => speciality.services,
-    {
-      cascade: true,
-    },
-  )
+  @ManyToMany(() => Speciality, (speciality: Speciality) => speciality.users, {
+    eager: true,
+    cascade: true,
+  })
+  @JoinTable()
   public specialities: Speciality[];
 }

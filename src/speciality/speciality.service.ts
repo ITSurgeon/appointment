@@ -6,7 +6,13 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Speciality } from './entity/speciality.entity';
-import { DeepPartial, DeleteResult, Repository, UpdateResult } from 'typeorm';
+import {
+  DeepPartial,
+  DeleteResult,
+  Repository,
+  SelectQueryBuilder,
+  UpdateResult,
+} from 'typeorm';
 import { EntityService } from '../common/entity.service';
 
 @Injectable()
@@ -35,14 +41,45 @@ export class SpecialityService extends EntityService {
   async findManySpecialities(
     query,
   ): Promise<{ entities: Speciality[]; totalCount: number }> {
-    return await this.findMany(query, this.specialityRepository);
+    const preQuery = { page: 1, limit: 9, ...query };
+    const { page, limit, userId, ...columnsQuery } = preQuery;
+
+    const paginationQuery = { page, limit };
+
+    const relationsQuery = { users: userId };
+
+    const builder: SelectQueryBuilder<Speciality> =
+      this.specialityRepository.createQueryBuilder('speciality');
+
+    builder.leftJoinAndSelect('speciality.users', 'users');
+
+    if (relationsQuery && Object.keys(relationsQuery).length > 0) {
+      this.filterByRelation(builder, relationsQuery);
+    }
+
+    if (columnsQuery && Object.keys(columnsQuery).length > 0) {
+      this.filterByColumn(builder, columnsQuery);
+    }
+
+    builder.select([
+      'speciality.name',
+      'speciality.id',
+      'users.id',
+      'users.firstName',
+      'users.lastName',
+    ]);
+
+    this.paginate(builder, paginationQuery);
+    const totalCount = await builder.getCount();
+    const entities: Speciality[] = await builder.getMany();
+    return { totalCount, entities };
   }
 
   async findOne(id: number): Promise<Speciality> {
     const speciality: Speciality | null =
       await this.specialityRepository.findOne({
         where: { id },
-        relations: ['services', 'users'],
+        relations: ['users'],
       });
     if (speciality) {
       return speciality;
@@ -58,7 +95,7 @@ export class SpecialityService extends EntityService {
     const updatedSpeciality: Speciality | null =
       await this.specialityRepository.findOne({
         where: { id },
-        relations: ['services'],
+        relations: ['users'],
       });
     if (updatedSpeciality) {
       return updatedSpeciality;

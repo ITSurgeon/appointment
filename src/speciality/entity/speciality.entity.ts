@@ -4,12 +4,10 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
-  JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Service } from '../../service/entity/service.entity';
 import { User } from '../../user/entities/user.entity';
 import { Exclude } from 'class-transformer';
 
@@ -28,12 +26,7 @@ export class Speciality {
   @Column({ nullable: true })
   public description: string;
 
-  @ManyToMany(() => Service, (service: Service) => service.specialities)
-  @JoinTable()
-  public services: Service[];
-
-  @ManyToMany(() => User, (user: User) => user.services)
-  @JoinTable()
+  @ManyToMany(() => User, (user: User) => user.specialities)
   public users: User[];
 
   @CreateDateColumn()

@@ -3,19 +3,18 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinTable,
+  Index,
   ManyToMany,
   PrimaryGeneratedColumn,
-  Unique,
 } from 'typeorm';
-import { Speciality } from '../../speciality/entity/speciality.entity';
 import { User } from '../../user/entities/user.entity';
 import { Exclude } from 'class-transformer';
 
-export const UNIQUE_SERVICE_NAME_CONSTRAINT = 'unique_service_name_constraint';
-
 @Entity()
-@Unique(UNIQUE_SERVICE_NAME_CONSTRAINT, ['name'])
+@Index(['name'], {
+  unique: true,
+  where: '"deletedAt" IS NULL',
+})
 export class Service {
   @PrimaryGeneratedColumn()
   public id: number;
@@ -29,11 +28,7 @@ export class Service {
   @Column({ nullable: true })
   public minCost: string;
 
-  @ManyToMany(() => Speciality, (speciality: Speciality) => speciality.services)
-  public specialities: Speciality[];
-
   @ManyToMany(() => User, (user: User) => user.services)
-  @JoinTable()
   public users: User[];
 
   @CreateDateColumn()

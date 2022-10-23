@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, Repository, SelectQueryBuilder } from 'typeorm';
 import { User } from './entities/user.entity';
 import { EntityService } from '../common/entity.service';
 
@@ -16,7 +16,39 @@ export class UserService extends EntityService {
   async findManyUsers(
     query,
   ): Promise<{ entities: User[]; totalCount: number }> {
-    return this.findMany(query, this.userRepository);
+    const preQuery = { page: 1, limit: 9, ...query };
+    const { page, limit, specialityId, serviceId, ...columnsQuery } = preQuery;
+
+    const paginationQuery = { page, limit };
+
+    const relationsQuery = { specialities: specialityId, services: serviceId };
+
+    const builder: SelectQueryBuilder<User> =
+      this.userRepository.createQueryBuilder('user');
+
+    builder.leftJoinAndSelect('user.specialities', 'specialities');
+    builder.leftJoinAndSelect('user.services', 'services');
+
+    if (relationsQuery && Object.keys(relationsQuery).length > 0) {
+      this.filterByRelation(builder, relationsQuery);
+    }
+    if (columnsQuery && Object.keys(columnsQuery).length > 0) {
+      this.filterByColumn(builder, columnsQuery);
+    }
+
+    builder.select([
+      'user.firstName',
+      'user.lastName',
+      'user.id',
+      'specialities.id',
+      'specialities.name',
+      'services.id',
+      'services.name',
+    ]);
+    this.paginate(builder, paginationQuery);
+    const totalCount = await builder.getCount();
+    const entities: User[] = await builder.getMany();
+    return { totalCount, entities };
   }
 
   async getByEmail(email: string): Promise<User> {

@@ -24,16 +24,18 @@ export class ServiceController {
   }
 
   @Get()
-  async findMany(@Query() query: FindManyServicesDto) {
+  async findMany(@Query() query: FindManyServicesDto): Promise<{
+    data: { services: Service[]; totalCount: number; currentPage: number };
+  }> {
     const { totalCount, entities } = await this.serviceService.findManyServices(
       query,
     );
 
     return {
       data: {
-        services: entities,
         totalCount,
         currentPage: query.page || 1,
+        services: entities,
       },
     };
   }
