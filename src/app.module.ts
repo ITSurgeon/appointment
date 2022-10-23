@@ -4,16 +4,16 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from '@hapi/joi';
 import { DatabaseModule } from './database/database.module';
-import { CategoryController } from './category/category.controller';
-import { CategoryService } from './category/category.service';
-import { CategoryModule } from './category/category.module';
+import { SpecialityController } from './speciality/speciality.controller';
+import { SpecialityService } from './speciality/speciality.service';
+import { SpecialityModule } from './speciality/speciality.module';
 import { ServiceModule } from './service/service.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Category } from './category/entity/category.entity';
+import { Speciality } from './speciality/entity/speciality.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Category]),
+    TypeOrmModule.forFeature([Speciality]),
     ConfigModule.forRoot({
       validationSchema: Joi.object({
         POSTGRES_HOST: Joi.string().required(),
@@ -32,10 +32,10 @@ import { Category } from './category/entity/category.entity';
     DatabaseModule,
     AuthenticationModule,
     UserModule,
-    CategoryModule,
+    SpecialityModule,
     ServiceModule,
   ],
-  controllers: [CategoryController],
-  providers: [CategoryService],
+  controllers: [SpecialityController],
+  providers: [SpecialityService],
 })
 export class AppModule {}

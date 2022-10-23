@@ -1,11 +1,11 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateServiceDto } from './create-service.dto';
 import { DeepPartial } from 'typeorm';
-import { Category } from '../../category/entity/category.entity';
+import { Speciality } from '../../speciality/entity/speciality.entity';
 import { User } from '../../user/entities/user.entity';
 
 export class UpdateServiceDto extends PartialType(CreateServiceDto) {
   id: number;
-  categories: [DeepPartial<Category>];
+  specialities: [DeepPartial<Speciality>];
   users: [DeepPartial<User>];
 }

@@ -1,4 +1,4 @@
-export class CreateCategoryDto {
+export class CreateSpecialityDto {
   name: string;
   description: string;
   minCost: number;

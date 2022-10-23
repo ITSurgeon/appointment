@@ -4,12 +4,9 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
-  JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
-import { Service } from '../../service/entity/service.entity';
 import { User } from '../../user/entities/user.entity';
 import { Exclude } from 'class-transformer';
 
@@ -18,7 +15,7 @@ import { Exclude } from 'class-transformer';
   unique: true,
   where: '"deletedAt" IS NULL',
 })
-export class Category {
+export class Service {
   @PrimaryGeneratedColumn()
   public id: number;
 
@@ -28,21 +25,15 @@ export class Category {
   @Column({ nullable: true })
   public description: string;
 
-  @ManyToMany(() => Service, (service: Service) => service.categories)
-  @JoinTable()
-  public services: Service[];
+  @Column({ nullable: true })
+  public minCost: string;
 
   @ManyToMany(() => User, (user: User) => user.services)
-  @JoinTable()
   public users: User[];
 
   @CreateDateColumn()
   @Exclude()
   public createdAt: Date;
-
-  @UpdateDateColumn()
-  @Exclude()
-  updatedAt: Date;
 
   @DeleteDateColumn()
   @Exclude()
