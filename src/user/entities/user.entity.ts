@@ -1,27 +1,23 @@
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   Index,
   JoinTable,
   ManyToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Service } from '../../service/entity/service.entity';
 import { Speciality } from '../../speciality/entity/speciality.entity';
+import { CommonEntity } from '../../common/common.entity';
+import { Appointment } from '../../appointment/entity/appointment.entity';
 
 @Entity()
 @Index(['email'], {
   unique: true,
   where: '"deletedAt" IS NULL',
 })
-export class User {
-  @PrimaryGeneratedColumn()
-  public id: number;
-
+export class User extends CommonEntity {
   @Column({ name: 'email' })
   public email: string;
 
@@ -41,18 +37,6 @@ export class User {
   @Column({ nullable: true })
   public phoneNumber?: string;
 
-  @CreateDateColumn()
-  @Exclude()
-  public createdAt: Date;
-
-  @DeleteDateColumn()
-  @Exclude()
-  public deletedAt: Date;
-
-  @UpdateDateColumn()
-  @Exclude()
-  updatedAt: Date;
-
   @ManyToMany(() => Service, (service: Service) => service.users, {
     eager: true,
     cascade: true,
@@ -66,4 +50,18 @@ export class User {
   })
   @JoinTable()
   public specialities: Speciality[];
+
+  @OneToMany(
+    () => Appointment,
+    (appointment: Appointment) => appointment.specialist,
+  )
+  @JoinTable()
+  public specialistAppointments: Appointment[];
+
+  @OneToMany(
+    () => Appointment,
+    (appointment: Appointment) => appointment.client,
+  )
+  @JoinTable()
+  public clientAppointments: Appointment[];
 }
