@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Service } from '../../service/entity/service.entity';
 import { Speciality } from '../../speciality/entity/speciality.entity';
@@ -51,14 +44,14 @@ export class User extends CommonEntity {
   @JoinTable()
   public specialities: Speciality[];
 
-  @OneToMany(
+  @ManyToMany(
     () => Appointment,
     (appointment: Appointment) => appointment.specialist,
   )
   @JoinTable()
   public specialistAppointments: Appointment[];
 
-  @OneToMany(
+  @ManyToMany(
     () => Appointment,
     (appointment: Appointment) => appointment.client,
   )

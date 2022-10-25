@@ -19,7 +19,7 @@ export class AppointmentService extends EntityService {
     super();
   }
 
-  async create(definition: DeepPartial<Appointment>): Promise<Appointment> {
+  async create(definition: DeepPartial<Appointment>) {
     return await this.appointmentRepository.save(definition);
   }
 
@@ -27,16 +27,17 @@ export class AppointmentService extends EntityService {
     query,
   ): Promise<{ entities: Appointment[]; totalCount: number }> {
     const preQuery = { page: 1, limit: 9, ...query };
-    const { page, limit, userId, ...columnsQuery } = preQuery;
+    const { page, limit, client, specialist, ...columnsQuery } = preQuery;
 
     const paginationQuery = { page, limit };
 
-    const relationsQuery = { users: userId };
+    const relationsQuery = { client, specialist };
 
     const builder: SelectQueryBuilder<Appointment> =
       this.appointmentRepository.createQueryBuilder('appointment');
 
-    builder.leftJoinAndSelect('appointment.users', 'users');
+    builder.leftJoinAndSelect('appointment.client', 'client');
+    builder.leftJoinAndSelect('appointment.specialist', 'specialist');
 
     if (relationsQuery && Object.keys(relationsQuery).length > 0) {
       this.filterByRelation(builder, relationsQuery);
@@ -47,11 +48,16 @@ export class AppointmentService extends EntityService {
     }
 
     builder.select([
-      'appointment.name',
+      'appointment.date',
+      'appointment.timeStart',
+      'appointment.comment',
       'appointment.id',
-      'users.id',
-      'users.firstName',
-      'users.lastName',
+      'client.id',
+      'client.firstName',
+      'client.lastName',
+      'specialist.id',
+      'specialist.firstName',
+      'specialist.lastName',
     ]);
 
     this.paginate(builder, paginationQuery);
@@ -64,7 +70,7 @@ export class AppointmentService extends EntityService {
     const appointment: Appointment | null =
       await this.appointmentRepository.findOne({
         where: { id },
-        relations: ['specialistId', 'clientId'],
+        relations: ['specialist', 'client'],
       });
     if (appointment) {
       return appointment;
@@ -80,7 +86,7 @@ export class AppointmentService extends EntityService {
     const updatedAppointment: Appointment | null =
       await this.appointmentRepository.findOne({
         where: { id },
-        relations: ['users'],
+        relations: ['specialist', 'client'],
       });
     if (updatedAppointment) {
       return updatedAppointment;

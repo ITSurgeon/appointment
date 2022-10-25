@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { CommonEntity } from '../../common/common.entity';
 import { Service } from '../../service/entity/service.entity';
@@ -11,28 +11,28 @@ export class Appointment extends CommonEntity {
   @Column({ nullable: true })
   public minCost: string;
 
-  @Column({ nullable: true })
-  public date: Date;
+  @Column({ type: 'date', nullable: true })
+  date: Date;
 
-  // @Column({ nullable: true })
-  // public timeStart: Timestamp;
+  @Column({ type: 'time', nullable: true })
+  timeStart: Date;
 
-  @ManyToOne(() => User, (user: User) => user.specialistAppointments, {
+  @ManyToMany(() => User, (user: User) => user.specialistAppointments, {
     eager: true,
     cascade: true,
   })
-  public specialist: User;
+  public specialist: User[];
 
-  @ManyToOne(() => User, (user: User) => user.clientAppointments, {
+  @ManyToMany(() => User, (user: User) => user.clientAppointments, {
     eager: true,
     cascade: true,
   })
-  public client: User;
+  public client: User[];
 
   @ManyToMany(() => Service, (service: Service) => service.appointments, {
     eager: true,
     cascade: true,
   })
   @JoinTable()
-  public service: Service;
+  public service: Service[];
 }
