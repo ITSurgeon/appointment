@@ -1,4 +1,4 @@
-export class FindManyAppointmentsDto {
+export class FindManyAppointmentsQuery {
   page?: number;
   limit?: number;
   specialist?: number;

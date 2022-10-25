@@ -12,7 +12,7 @@ import { AppointmentService } from './appointment.service';
 import { Appointment } from './entity/appointment.entity';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
-import { FindManyAppointmentsDto } from './dto/find-many-appointments.dto';
+import { FindManyAppointmentsQuery } from './dto/find-many-appointments.query';
 
 @Controller('appointment')
 export class AppointmentController {
@@ -24,7 +24,7 @@ export class AppointmentController {
   }
 
   @Get()
-  async findMany(@Query() query: FindManyAppointmentsDto): Promise<{
+  async findMany(@Query() query: FindManyAppointmentsQuery): Promise<{
     data: { appointments: Appointment[]; totalCount: any; currentPage: number };
   }> {
     const { totalCount, entities } =
@@ -40,22 +40,22 @@ export class AppointmentController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.appointmentService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() appointment: UpdateAppointmentDto) {
+  update(@Param('id') id: number, @Body() appointment: UpdateAppointmentDto) {
     return this.appointmentService.update(+id, appointment);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.appointmentService.remove(+id);
   }
 
   @Post(':id')
-  restore(@Param('id') id: string) {
+  restore(@Param('id') id: number) {
     return this.appointmentService.restoreDeletedAppointment(+id);
   }
 }

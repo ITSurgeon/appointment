@@ -21,18 +21,18 @@ export class Appointment extends CommonEntity {
     eager: true,
     cascade: true,
   })
-  public specialist: User[];
+  public specialists: User[];
 
   @ManyToMany(() => User, (user: User) => user.clientAppointments, {
     eager: true,
     cascade: true,
   })
-  public client: User[];
+  public clients: User[];
 
   @ManyToMany(() => Service, (service: Service) => service.appointments, {
     eager: true,
     cascade: true,
   })
   @JoinTable()
-  public service: Service[];
+  public services: Service[];
 }

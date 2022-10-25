@@ -83,30 +83,24 @@ export class AppointmentService extends EntityService {
     definition: DeepPartial<Appointment>,
   ): Promise<Appointment> {
     await this.appointmentRepository.update(id, definition);
-    const updatedAppointment: Appointment | null =
-      await this.appointmentRepository.findOne({
-        where: { id },
-        relations: ['specialist', 'client'],
-      });
-    if (updatedAppointment) {
-      return updatedAppointment;
-    }
-    throw new NotFoundException();
+    return await this.appointmentRepository.findOne({
+      where: { id },
+      relations: ['specialist', 'client'],
+    });
   }
 
   async remove(id: number): Promise<boolean> {
-    const result: DeleteResult = await this.appointmentRepository.softDelete(
-      id,
-    );
-    return !!result.affected;
+    const restoreResponse: DeleteResult =
+      await this.appointmentRepository.softDelete(id);
+    return restoreResponse.affected > 0;
   }
 
-  async restoreDeletedAppointment(id: number): Promise<string> {
+  async restoreDeletedAppointment(id: number): Promise<boolean> {
     const restoreResponse: UpdateResult =
       await this.appointmentRepository.restore(id);
     if (!restoreResponse.affected) {
       throw new NotFoundException(id);
     }
-    return `Appointment with id: ${id} restored`;
+    return restoreResponse.affected > 0;
   }
 }

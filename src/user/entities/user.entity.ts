@@ -46,14 +46,14 @@ export class User extends CommonEntity {
 
   @ManyToMany(
     () => Appointment,
-    (appointment: Appointment) => appointment.specialist,
+    (appointment: Appointment) => appointment.specialists,
   )
   @JoinTable()
   public specialistAppointments: Appointment[];
 
   @ManyToMany(
     () => Appointment,
-    (appointment: Appointment) => appointment.client,
+    (appointment: Appointment) => appointment.clients,
   )
   @JoinTable()
   public clientAppointments: Appointment[];
