@@ -9,10 +9,10 @@ import {
   Query,
 } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
-import { Appointment } from './entity/appointment.entity';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { FindManyAppointmentsQuery } from './dto/find-many-appointments.query';
+import { AppointmentSearchResult } from '../types/appointmentSearchResult.interface';
 
 @Controller('appointment')
 export class AppointmentController {
@@ -24,18 +24,16 @@ export class AppointmentController {
   }
 
   @Get()
-  async findMany(@Query() query: FindManyAppointmentsQuery): Promise<{
-    data: { appointments: Appointment[]; totalCount: any; currentPage: number };
-  }> {
+  async findMany(
+    @Query() query: FindManyAppointmentsQuery,
+  ): Promise<AppointmentSearchResult> {
     const { totalCount, entities } =
       await this.appointmentService.findManyAppointments(query);
 
     return {
-      data: {
-        appointments: entities,
-        totalCount,
-        currentPage: query.page || 1,
-      },
+      data: entities,
+      totalCount,
+      currentPage: query.page || 1,
     };
   }
 

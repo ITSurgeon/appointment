@@ -13,6 +13,7 @@ import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
 import { Service } from './entity/service.entity';
 import { FindManyServicesDto } from './dto/find-many-services.dto';
+import { ServiceSearchResultInterface } from '../types/serviceSearchResult.interface';
 
 @Controller('service')
 export class ServiceController {
@@ -24,19 +25,17 @@ export class ServiceController {
   }
 
   @Get()
-  async findMany(@Query() query: FindManyServicesDto): Promise<{
-    data: { services: Service[]; totalCount: number; currentPage: number };
-  }> {
+  async findMany(
+    @Query() query: FindManyServicesDto,
+  ): Promise<ServiceSearchResultInterface> {
     const { totalCount, entities } = await this.serviceService.findManyServices(
       query,
     );
 
     return {
-      data: {
-        totalCount,
-        currentPage: query.page || 1,
-        services: entities,
-      },
+      totalCount,
+      currentPage: query.page || 1,
+      services: entities,
     };
   }
 

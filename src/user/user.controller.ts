@@ -2,7 +2,7 @@ import { UserService } from './user.service';
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import CreateUserDto from './dto/create-user.dto';
 import { FindManyUsersDto } from './dto/find-many-users.dto';
-import { User } from './entities/user.entity';
+import { UserSearchResultInterface } from '../types/userSearchResult.interface';
 
 @Controller('user')
 export class UserController {
@@ -14,19 +14,17 @@ export class UserController {
   }
 
   @Get()
-  async findMany(@Query() query: FindManyUsersDto): Promise<{
-    data: { totalCount: number; currentPage: number; users: User[] };
-  }> {
+  async findMany(
+    @Query() query: FindManyUsersDto,
+  ): Promise<UserSearchResultInterface> {
     const { totalCount, entities } = await this.userService.findManyUsers(
       query,
     );
 
     return {
-      data: {
-        totalCount,
-        currentPage: query.page || 1,
-        users: entities,
-      },
+      data: entities,
+      totalCount,
+      currentPage: query.page || 1,
     };
   }
 

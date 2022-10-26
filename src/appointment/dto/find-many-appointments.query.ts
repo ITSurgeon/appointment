@@ -1,6 +1,6 @@
 export class FindManyAppointmentsQuery {
   page?: number;
   limit?: number;
-  specialist?: number;
-  client?: number;
+  specialists?: number;
+  clients?: number;
 }
