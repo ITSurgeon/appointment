@@ -4,6 +4,8 @@ import { Service } from '../../service/entity/service.entity';
 import { Speciality } from '../../speciality/entity/speciality.entity';
 import { CommonEntity } from '../../common/common.entity';
 import { Appointment } from '../../appointment/entity/appointment.entity';
+import { UsualTimeSlotEntity } from '../../time-slot/entity/usual-time-slot.entity';
+import { SpecificTimeSlotEntity } from '../../time-slot/entity/specific-time-slot.entity';
 
 @Entity()
 @Index(['email'], {
@@ -57,4 +59,24 @@ export class User extends CommonEntity {
   )
   @JoinTable()
   public clientAppointments: Appointment[];
+
+  @ManyToMany(
+    () => UsualTimeSlotEntity,
+    (usualTimeSlot: UsualTimeSlotEntity) => usualTimeSlot.specialists,
+    {
+      eager: true,
+      cascade: true,
+    },
+  )
+  public usualTimeSlots: UsualTimeSlotEntity[];
+
+  @ManyToMany(
+    () => SpecificTimeSlotEntity,
+    (specificTimeSlot: SpecificTimeSlotEntity) => specificTimeSlot.specialists,
+    {
+      eager: true,
+      cascade: true,
+    },
+  )
+  public specificTimeSlots: SpecificTimeSlotEntity[];
 }
