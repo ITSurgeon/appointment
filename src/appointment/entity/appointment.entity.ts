@@ -12,9 +12,6 @@ export class Appointment extends CommonEntity {
   @Column({ nullable: true })
   public minCost: string;
 
-  @Column({ type: 'timestamptz', nullable: true })
-  dateTime: Date;
-
   @ManyToMany(() => User, (user: User) => user.specialistAppointments, {
     eager: true,
     cascade: true,
