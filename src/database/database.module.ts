@@ -4,6 +4,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from '../user/entities/user.entity';
 import { Speciality } from '../speciality/entity/speciality.entity';
 import { Service } from '../service/entity/service.entity';
+import { Appointment } from '../appointment/entity/appointment.entity';
+import { UsualTimeSlotEntity } from '../time-slot/entity/usual-time-slot.entity';
+import { SpecificTimeSlotEntity } from '../time-slot/entity/specific-time-slot.entity';
 
 @Module({
   imports: [
@@ -17,7 +20,14 @@ import { Service } from '../service/entity/service.entity';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [User, Speciality, Service],
+        entities: [
+          User,
+          Speciality,
+          Service,
+          Appointment,
+          UsualTimeSlotEntity,
+          SpecificTimeSlotEntity,
+        ],
         autoLoadEntities: true,
         synchronize: true,
       }),

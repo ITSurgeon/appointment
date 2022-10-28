@@ -68,6 +68,7 @@ export class User extends CommonEntity {
       cascade: true,
     },
   )
+  @JoinTable()
   public usualTimeSlots: UsualTimeSlotEntity[];
 
   @ManyToMany(
@@ -78,5 +79,6 @@ export class User extends CommonEntity {
       cascade: true,
     },
   )
+  @JoinTable()
   public specificTimeSlots: SpecificTimeSlotEntity[];
 }

@@ -20,16 +20,9 @@ export class SpecificTimeSlotEntity extends CommonEntity {
   @ManyToMany(
     () => Appointment,
     (appointment: Appointment) => appointment.specificTimeSlots,
-    {
-      eager: true,
-      cascade: true,
-    },
   )
   public appointments: Appointment[];
 
-  @ManyToMany(() => User, (user: User) => user.specificTimeSlots, {
-    eager: true,
-    cascade: true,
-  })
+  @ManyToMany(() => User, (user: User) => user.specificTimeSlots)
   public specialists: User[];
 }

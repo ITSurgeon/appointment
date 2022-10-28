@@ -11,6 +11,7 @@ import { ServiceModule } from './service/service.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Speciality } from './speciality/entity/speciality.entity';
 import { AppointmentModule } from './appointment/appointment.module';
+import { TimeSlotModule } from './time-slot/time-slot.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AppointmentModule } from './appointment/appointment.module';
     SpecialityModule,
     ServiceModule,
     AppointmentModule,
+    TimeSlotModule,
   ],
   controllers: [SpecialityController],
   providers: [SpecialityService],

@@ -13,9 +13,6 @@ export class UsualTimeSlotEntity extends CommonEntity {
   @Column({ type: 'time', nullable: true })
   timeEnd: Date;
 
-  @ManyToMany(() => User, (user: User) => user.usualTimeSlots, {
-    eager: true,
-    cascade: true,
-  })
+  @ManyToMany(() => User, (user: User) => user.usualTimeSlots)
   public specialists: User[];
 }

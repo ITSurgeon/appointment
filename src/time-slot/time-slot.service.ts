@@ -35,7 +35,7 @@ export class TimeSlotService extends EntityService {
 
     const paginationQuery = { page, limit };
 
-    const relationsQuery = { users: userId };
+    const relationsQuery = { specialists: userId };
 
     const builder: SelectQueryBuilder<UsualTimeSlotEntity> =
       this.usualTimeSlotRepository.createQueryBuilder('usualTimeSlot');
@@ -55,9 +55,9 @@ export class TimeSlotService extends EntityService {
       'usualTimeSlot.dayOfWeek',
       'usualTimeSlot.timeStart',
       'usualTimeSlot.timeEnd',
-      'specialists.id',
-      'specialists.firstName',
-      'specialists.lastName',
+      // 'specialists.id',
+      // 'specialists.firstName',
+      // 'specialists.lastName',
     ]);
 
     this.paginate(builder, paginationQuery);
