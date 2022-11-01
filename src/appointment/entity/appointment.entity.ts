@@ -12,32 +12,19 @@ export class Appointment extends CommonEntity {
   @Column({ nullable: true })
   public minCost: string;
 
-  @ManyToMany(() => User, (user: User) => user.specialistAppointments, {
-    eager: true,
-    cascade: true,
-  })
+  @ManyToMany(() => User, (user: User) => user.specialistAppointments)
   public specialists: User[];
 
-  @ManyToMany(() => User, (user: User) => user.clientAppointments, {
-    eager: true,
-    cascade: true,
-  })
+  @ManyToMany(() => User, (user: User) => user.clientAppointments)
   public clients: User[];
 
-  @ManyToMany(() => Service, (service: Service) => service.appointments, {
-    eager: true,
-    cascade: true,
-  })
+  @ManyToMany(() => Service, (service: Service) => service.appointments)
   @JoinTable()
   public services: Service[];
 
   @ManyToMany(
     () => SpecificTimeSlotEntity,
     (specificTimeSlot: SpecificTimeSlotEntity) => specificTimeSlot.appointments,
-    {
-      eager: true,
-      cascade: true,
-    },
   )
   @JoinTable()
   public specificTimeSlots: SpecificTimeSlotEntity[];

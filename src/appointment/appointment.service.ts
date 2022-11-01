@@ -9,18 +9,36 @@ import {
   UpdateResult,
 } from 'typeorm';
 import { EntityService } from '../common/entity.service';
+import { SpecificTimeSlotEntity } from '../time-slot/entity/specific-time-slot.entity';
 
 @Injectable()
 export class AppointmentService extends EntityService {
   constructor(
     @InjectRepository(Appointment)
     private appointmentRepository: Repository<Appointment>,
+    @InjectRepository(SpecificTimeSlotEntity)
+    private specificTimeSlotRepository: Repository<SpecificTimeSlotEntity>,
   ) {
     super();
   }
 
-  async create(definition: DeepPartial<Appointment>) {
-    return await this.appointmentRepository.save(definition);
+  async create(definition): Promise<Appointment> {
+    const { specificTimeSlotId, clientId, specialistId, serviceId, comment } =
+      definition;
+    const appointment: Appointment = this.appointmentRepository.create({
+      clients: [{ id: clientId }],
+      specialists: [{ id: specialistId }],
+      services: [{ id: serviceId }],
+      specificTimeSlots: [{ id: specificTimeSlotId }],
+      comment,
+    });
+    await this.specificTimeSlotRepository.update(
+      { id: specificTimeSlotId },
+      {
+        available: false,
+      },
+    );
+    return this.appointmentRepository.save(appointment);
   }
 
   async findManyAppointments(

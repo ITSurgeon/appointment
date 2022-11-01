@@ -10,7 +10,6 @@ import {
 import { UsualTimeSlotEntity } from './entity/usual-time-slot.entity';
 import { SpecificTimeSlotEntity } from './entity/specific-time-slot.entity';
 import { EntityService } from '../common/entity.service';
-import { CreateSpecificTimeSlotDto } from './dto/create-specific-time-slot.dto';
 
 @Injectable()
 export class TimeSlotService extends EntityService {
@@ -101,10 +100,8 @@ export class TimeSlotService extends EntityService {
     return restoreResponse.affected > 0;
   }
 
-  async createSpecificTimeSlot(
-    createSpecificTimeSlotDto: CreateSpecificTimeSlotDto,
-  ): Promise<SpecificTimeSlotEntity[]> {
-    const { specialistId, date } = createSpecificTimeSlotDto;
+  async createSpecificTimeSlot(definition): Promise<SpecificTimeSlotEntity[]> {
+    const { specialistId, date } = definition;
     const dow = new Date(date).getDay() === 0 ? 7 : new Date(date).getDay();
     const usualTimeSlots: UsualTimeSlotEntity[] =
       await this.usualTimeSlotRepository.find({
@@ -125,7 +122,7 @@ export class TimeSlotService extends EntityService {
       this.specificTimeSlotRepository.save(newSlot);
     });
     return await this.specificTimeSlotRepository.find({
-      // relations: ['specialists', 'usualTimeSlots'],
+      relations: ['specialists', 'usualTimeSlots'],
       where: {
         specialists: { id: specialistId },
         usualTimeSlots: { dayOfWeek: dow },
