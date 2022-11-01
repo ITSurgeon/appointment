@@ -39,5 +39,6 @@ export class Appointment extends CommonEntity {
       cascade: true,
     },
   )
+  @JoinTable()
   public specificTimeSlots: SpecificTimeSlotEntity[];
 }

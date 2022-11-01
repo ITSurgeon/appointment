@@ -16,7 +16,7 @@ export class User extends CommonEntity {
   @Column({ name: 'email' })
   public email: string;
 
-  @Column({ nullable: true })
+  @Column({ select: false, nullable: true })
   @Exclude()
   public password: string;
 
@@ -33,14 +33,14 @@ export class User extends CommonEntity {
   public phoneNumber?: string;
 
   @ManyToMany(() => Service, (service: Service) => service.users, {
-    eager: true,
+    // eager: true,
     cascade: true,
   })
   @JoinTable()
   public services: Service[];
 
   @ManyToMany(() => Speciality, (speciality: Speciality) => speciality.users, {
-    eager: true,
+    //eager: true,
     cascade: true,
   })
   @JoinTable()
@@ -63,22 +63,12 @@ export class User extends CommonEntity {
   @ManyToMany(
     () => UsualTimeSlotEntity,
     (usualTimeSlot: UsualTimeSlotEntity) => usualTimeSlot.specialists,
-    {
-      eager: true,
-      cascade: true,
-    },
   )
-  @JoinTable()
   public usualTimeSlots: UsualTimeSlotEntity[];
 
   @ManyToMany(
     () => SpecificTimeSlotEntity,
     (specificTimeSlot: SpecificTimeSlotEntity) => specificTimeSlot.specialists,
-    {
-      eager: true,
-      cascade: true,
-    },
   )
-  @JoinTable()
   public specificTimeSlots: SpecificTimeSlotEntity[];
 }

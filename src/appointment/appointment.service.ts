@@ -36,9 +36,13 @@ export class AppointmentService extends EntityService {
     const builder: SelectQueryBuilder<Appointment> =
       this.appointmentRepository.createQueryBuilder('appointment');
 
-    builder.leftJoinAndSelect('appointment.clients', 'client');
-    builder.leftJoinAndSelect('appointment.specialists', 'specialist');
+    builder.leftJoinAndSelect('appointment.clients', 'clients');
+    builder.leftJoinAndSelect('appointment.specialists', 'specialists');
     builder.leftJoinAndSelect('appointment.services', 'services');
+    builder.leftJoinAndSelect(
+      'appointment.specificTimeSlots',
+      'specificTimeSlots',
+    );
 
     if (relationsQuery && Object.keys(relationsQuery).length > 0) {
       this.filterByRelation(builder, relationsQuery);
@@ -52,12 +56,12 @@ export class AppointmentService extends EntityService {
       'appointment.dateTime',
       'appointment.comment',
       'appointment.id',
-      'client.id',
-      'client.firstName',
-      'client.lastName',
-      'specialist.id',
-      'specialist.firstName',
-      'specialist.lastName',
+      'clients.id',
+      'clients.firstName',
+      'clients.lastName',
+      'specialists.id',
+      'specialists.firstName',
+      'specialists.lastName',
       'services.id',
       'services.name',
       'services.description',

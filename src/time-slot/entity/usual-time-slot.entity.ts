@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import { CommonEntity } from '../../common/common.entity';
 import { User } from '../../user/entities/user.entity';
+import { SpecificTimeSlotEntity } from './specific-time-slot.entity';
 
 @Entity()
 export class UsualTimeSlotEntity extends CommonEntity {
@@ -14,5 +15,13 @@ export class UsualTimeSlotEntity extends CommonEntity {
   timeEnd: Date;
 
   @ManyToMany(() => User, (user: User) => user.usualTimeSlots)
+  @JoinTable()
   public specialists: User[];
+
+  @ManyToMany(
+    () => SpecificTimeSlotEntity,
+    (specificTimeSlot: SpecificTimeSlotEntity) =>
+      specificTimeSlot.usualTimeSlots,
+  )
+  public specificTimeSlots: SpecificTimeSlotEntity[];
 }
