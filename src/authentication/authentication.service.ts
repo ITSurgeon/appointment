@@ -35,7 +35,7 @@ export class AuthenticationService {
       return user;
     } catch (error) {
       throw new HttpException(
-        'Wrong credentials provided',
+        'Wrong credentials provided!',
         HttpStatus.BAD_REQUEST,
       );
     }

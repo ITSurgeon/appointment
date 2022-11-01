@@ -1,10 +1,10 @@
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import { CommonEntity } from '../../common/common.entity';
 import { User } from '../../user/entities/user.entity';
-import { SpecificTimeSlotEntity } from './specific-time-slot.entity';
+import { SpecificTimeslot } from './specific-time-slot.entity';
 
 @Entity()
-export class UsualTimeSlotEntity extends CommonEntity {
+export class UsualTimeslot extends CommonEntity {
   @Column({ nullable: true })
   dayOfWeek: number;
 
@@ -19,9 +19,8 @@ export class UsualTimeSlotEntity extends CommonEntity {
   public specialists: User[];
 
   @ManyToMany(
-    () => SpecificTimeSlotEntity,
-    (specificTimeSlot: SpecificTimeSlotEntity) =>
-      specificTimeSlot.usualTimeSlots,
+    () => SpecificTimeslot,
+    (specificTimeSlot: SpecificTimeslot) => specificTimeSlot.usualTimeSlots,
   )
-  public specificTimeSlots: SpecificTimeSlotEntity[];
+  public specificTimeSlots: SpecificTimeslot[];
 }

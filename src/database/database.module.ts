@@ -5,8 +5,8 @@ import { User } from '../user/entities/user.entity';
 import { Speciality } from '../speciality/entity/speciality.entity';
 import { Service } from '../service/entity/service.entity';
 import { Appointment } from '../appointment/entity/appointment.entity';
-import { UsualTimeSlotEntity } from '../time-slot/entity/usual-time-slot.entity';
-import { SpecificTimeSlotEntity } from '../time-slot/entity/specific-time-slot.entity';
+import { UsualTimeslot } from '../time-slot/entity/usual-time-slot.entity';
+import { SpecificTimeslot } from '../time-slot/entity/specific-time-slot.entity';
 
 @Module({
   imports: [
@@ -25,8 +25,8 @@ import { SpecificTimeSlotEntity } from '../time-slot/entity/specific-time-slot.e
           Speciality,
           Service,
           Appointment,
-          UsualTimeSlotEntity,
-          SpecificTimeSlotEntity,
+          UsualTimeslot,
+          SpecificTimeslot,
         ],
         autoLoadEntities: true,
         synchronize: true,

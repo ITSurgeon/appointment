@@ -9,15 +9,15 @@ import {
   UpdateResult,
 } from 'typeorm';
 import { EntityService } from '../common/entity.service';
-import { SpecificTimeSlotEntity } from '../time-slot/entity/specific-time-slot.entity';
+import { SpecificTimeslot } from '../time-slot/entity/specific-time-slot.entity';
 
 @Injectable()
 export class AppointmentService extends EntityService {
   constructor(
     @InjectRepository(Appointment)
     private appointmentRepository: Repository<Appointment>,
-    @InjectRepository(SpecificTimeSlotEntity)
-    private specificTimeSlotRepository: Repository<SpecificTimeSlotEntity>,
+    @InjectRepository(SpecificTimeslot)
+    private specificTimeSlotRepository: Repository<SpecificTimeslot>,
   ) {
     super();
   }

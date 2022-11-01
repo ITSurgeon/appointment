@@ -3,12 +3,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, Repository, SelectQueryBuilder } from 'typeorm';
 import { User } from './entities/user.entity';
 import { EntityService } from '../common/entity.service';
+import { Speciality } from '../speciality/entity/speciality.entity';
+import { Service } from '../service/entity/service.entity';
 
 @Injectable()
 export class UserService extends EntityService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Speciality)
+    private specialityRepository: Repository<Speciality>,
+    @InjectRepository(Service)
+    private serviceRepository: Repository<Service>,
   ) {
     super();
   }
@@ -63,7 +69,17 @@ export class UserService extends EntityService {
   }
 
   async getById(id: number): Promise<User> {
-    const user: User | null = await this.userRepository.findOneBy({ id });
+    const user: User | null = await this.userRepository.findOne({
+      where: { id },
+      relations: [
+        'specialities',
+        'services',
+        'clientAppointments',
+        'specialistAppointments',
+        'usualTimeSlots',
+        'specificTimeSlots',
+      ],
+    });
     if (user) {
       return user;
     }
@@ -85,5 +101,28 @@ export class UserService extends EntityService {
       );
     }
     return await this.userRepository.save(definition);
+  }
+
+  async update(id: number, definition: DeepPartial<User>) {
+    return await this.userRepository.update(id, definition);
+  }
+
+  async becomeSpecialist(id: number, definition) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['specialities', 'services'],
+    });
+    user.role = definition.role;
+    user.specialities = [
+      await this.specialityRepository.findOne({
+        where: { id: definition.specialityId },
+      }),
+    ];
+    user.services = [
+      await this.serviceRepository.findOne({
+        where: { id: definition.services },
+      }),
+    ];
+    return this.userRepository.save(user);
   }
 }

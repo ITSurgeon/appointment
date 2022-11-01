@@ -2,10 +2,10 @@ import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import { CommonEntity } from '../../common/common.entity';
 import { User } from '../../user/entities/user.entity';
 import { Appointment } from '../../appointment/entity/appointment.entity';
-import { UsualTimeSlotEntity } from './usual-time-slot.entity';
+import { UsualTimeslot } from './usual-time-slot.entity';
 
 @Entity()
-export class SpecificTimeSlotEntity extends CommonEntity {
+export class SpecificTimeslot extends CommonEntity {
   @Column({ type: 'timestamptz', nullable: true })
   dateTimeStart: Date;
 
@@ -32,13 +32,13 @@ export class SpecificTimeSlotEntity extends CommonEntity {
   public specialists: User[];
 
   @ManyToMany(
-    () => UsualTimeSlotEntity,
-    (usualTimeSlot: UsualTimeSlotEntity) => usualTimeSlot.specificTimeSlots,
+    () => UsualTimeslot,
+    (usualTimeSlot: UsualTimeslot) => usualTimeSlot.specificTimeSlots,
     {
       eager: true,
       cascade: true,
     },
   )
   @JoinTable()
-  public usualTimeSlots: UsualTimeSlotEntity[];
+  public usualTimeSlots: UsualTimeslot[];
 }

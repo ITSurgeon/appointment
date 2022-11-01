@@ -2,7 +2,7 @@ import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { CommonEntity } from '../../common/common.entity';
 import { Service } from '../../service/entity/service.entity';
-import { SpecificTimeSlotEntity } from '../../time-slot/entity/specific-time-slot.entity';
+import { SpecificTimeslot } from '../../time-slot/entity/specific-time-slot.entity';
 
 @Entity()
 export class Appointment extends CommonEntity {
@@ -23,9 +23,9 @@ export class Appointment extends CommonEntity {
   public services: Service[];
 
   @ManyToMany(
-    () => SpecificTimeSlotEntity,
-    (specificTimeSlot: SpecificTimeSlotEntity) => specificTimeSlot.appointments,
+    () => SpecificTimeslot,
+    (specificTimeSlot: SpecificTimeslot) => specificTimeSlot.appointments,
   )
   @JoinTable()
-  public specificTimeSlots: SpecificTimeSlotEntity[];
+  public specificTimeSlots: SpecificTimeslot[];
 }

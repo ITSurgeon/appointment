@@ -7,30 +7,30 @@ import {
   SelectQueryBuilder,
   UpdateResult,
 } from 'typeorm';
-import { UsualTimeSlotEntity } from './entity/usual-time-slot.entity';
-import { SpecificTimeSlotEntity } from './entity/specific-time-slot.entity';
+import { UsualTimeslot } from './entity/usual-time-slot.entity';
+import { SpecificTimeslot } from './entity/specific-time-slot.entity';
 import { EntityService } from '../common/entity.service';
 
 @Injectable()
 export class TimeSlotService extends EntityService {
   constructor(
-    @InjectRepository(UsualTimeSlotEntity)
-    private usualTimeSlotRepository: Repository<UsualTimeSlotEntity>,
-    @InjectRepository(SpecificTimeSlotEntity)
-    private specificTimeSlotRepository: Repository<SpecificTimeSlotEntity>,
+    @InjectRepository(UsualTimeslot)
+    private usualTimeSlotRepository: Repository<UsualTimeslot>,
+    @InjectRepository(SpecificTimeslot)
+    private specificTimeSlotRepository: Repository<SpecificTimeslot>,
   ) {
     super();
   }
 
   async createUsualTimeSlot(
-    definition: DeepPartial<UsualTimeSlotEntity>,
-  ): Promise<UsualTimeSlotEntity> {
+    definition: DeepPartial<UsualTimeslot>,
+  ): Promise<UsualTimeslot> {
     return await this.usualTimeSlotRepository.save(definition);
   }
 
   async findManyUsualTimeSlots(
     query,
-  ): Promise<{ entities: UsualTimeSlotEntity[]; totalCount: number }> {
+  ): Promise<{ entities: UsualTimeslot[]; totalCount: number }> {
     const preQuery = { page: 1, limit: 9, ...query };
     const { page, limit, userId, ...columnsQuery } = preQuery;
 
@@ -38,7 +38,7 @@ export class TimeSlotService extends EntityService {
 
     const relationsQuery = { specialists: userId };
 
-    const builder: SelectQueryBuilder<UsualTimeSlotEntity> =
+    const builder: SelectQueryBuilder<UsualTimeslot> =
       this.usualTimeSlotRepository.createQueryBuilder('usualTimeSlot');
 
     builder.leftJoinAndSelect('usualTimeSlot.specialists', 'specialists');
@@ -63,11 +63,11 @@ export class TimeSlotService extends EntityService {
 
     //  this.paginate(builder, paginationQuery);
     const totalCount = await builder.getCount();
-    const entities: UsualTimeSlotEntity[] = await builder.getMany();
+    const entities: UsualTimeslot[] = await builder.getMany();
     return { totalCount, entities };
   }
 
-  async findOneUsualTimeslot(id: number): Promise<UsualTimeSlotEntity> {
+  async findOneUsualTimeslot(id: number): Promise<UsualTimeslot> {
     return await this.usualTimeSlotRepository.findOne({
       where: { id },
       relations: ['specialists'],
@@ -76,8 +76,8 @@ export class TimeSlotService extends EntityService {
 
   async updateUsualTimeslot(
     id: number,
-    definition: DeepPartial<UsualTimeSlotEntity>,
-  ): Promise<UsualTimeSlotEntity> {
+    definition: DeepPartial<UsualTimeslot>,
+  ): Promise<UsualTimeslot> {
     await this.usualTimeSlotRepository.update(id, definition);
     return await this.usualTimeSlotRepository.findOne({
       where: { id },
@@ -100,10 +100,10 @@ export class TimeSlotService extends EntityService {
     return restoreResponse.affected > 0;
   }
 
-  async createSpecificTimeSlot(definition): Promise<SpecificTimeSlotEntity[]> {
+  async createSpecificTimeSlot(definition): Promise<SpecificTimeslot[]> {
     const { specialistId, date } = definition;
     const dow = new Date(date).getDay() === 0 ? 7 : new Date(date).getDay();
-    const usualTimeSlots: UsualTimeSlotEntity[] =
+    const usualTimeSlots: UsualTimeslot[] =
       await this.usualTimeSlotRepository.find({
         relations: ['specialists'],
         where: {
@@ -112,13 +112,12 @@ export class TimeSlotService extends EntityService {
         },
       });
     usualTimeSlots.forEach((usualTimeSlot) => {
-      const newSlot: SpecificTimeSlotEntity =
-        this.specificTimeSlotRepository.create({
-          dateTimeStart: new Date(`${date}T${usualTimeSlot.timeStart}`),
-          dateTimeEnd: new Date(`${date}T${usualTimeSlot.timeEnd}`),
-          usualTimeSlots: [usualTimeSlot],
-          specialists: [{ id: specialistId }],
-        });
+      const newSlot: SpecificTimeslot = this.specificTimeSlotRepository.create({
+        dateTimeStart: new Date(`${date}T${usualTimeSlot.timeStart}`),
+        dateTimeEnd: new Date(`${date}T${usualTimeSlot.timeEnd}`),
+        usualTimeSlots: [usualTimeSlot],
+        specialists: [{ id: specialistId }],
+      });
       this.specificTimeSlotRepository.save(newSlot);
     });
     return await this.specificTimeSlotRepository.find({
@@ -135,7 +134,7 @@ export class TimeSlotService extends EntityService {
 
   async findManySpecificTimeSlots(
     query,
-  ): Promise<{ entities: SpecificTimeSlotEntity[]; totalCount: number }> {
+  ): Promise<{ entities: SpecificTimeslot[]; totalCount: number }> {
     const preQuery = { page: 1, limit: 9, ...query };
     const { page, limit, userId, ...columnsQuery } = preQuery;
 
@@ -143,7 +142,7 @@ export class TimeSlotService extends EntityService {
 
     const relationsQuery = { users: userId };
 
-    const builder: SelectQueryBuilder<SpecificTimeSlotEntity> =
+    const builder: SelectQueryBuilder<SpecificTimeslot> =
       this.specificTimeSlotRepository.createQueryBuilder('specificTimeSlot');
 
     builder.leftJoinAndSelect('specificTimeSlot.specialists', 'specialists');
@@ -171,11 +170,11 @@ export class TimeSlotService extends EntityService {
 
     //this.paginate(builder, paginationQuery);
     const totalCount = await builder.getCount();
-    const entities: SpecificTimeSlotEntity[] = await builder.getMany();
+    const entities: SpecificTimeslot[] = await builder.getMany();
     return { totalCount, entities };
   }
 
-  async findOneSpecificTimeslot(id: number): Promise<SpecificTimeSlotEntity> {
+  async findOneSpecificTimeslot(id: number): Promise<SpecificTimeslot> {
     return await this.specificTimeSlotRepository.findOne({
       where: { id },
       relations: ['specialists'],
@@ -184,8 +183,8 @@ export class TimeSlotService extends EntityService {
 
   async updateSpecificTimeslot(
     id: number,
-    definition: DeepPartial<SpecificTimeSlotEntity>,
-  ): Promise<SpecificTimeSlotEntity> {
+    definition: DeepPartial<SpecificTimeslot>,
+  ): Promise<SpecificTimeslot> {
     await this.specificTimeSlotRepository.update(id, definition);
     return await this.specificTimeSlotRepository.findOne({
       where: { id },

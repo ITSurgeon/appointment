@@ -4,8 +4,8 @@ import { Service } from '../../service/entity/service.entity';
 import { Speciality } from '../../speciality/entity/speciality.entity';
 import { CommonEntity } from '../../common/common.entity';
 import { Appointment } from '../../appointment/entity/appointment.entity';
-import { UsualTimeSlotEntity } from '../../time-slot/entity/usual-time-slot.entity';
-import { SpecificTimeSlotEntity } from '../../time-slot/entity/specific-time-slot.entity';
+import { UsualTimeslot } from '../../time-slot/entity/usual-time-slot.entity';
+import { SpecificTimeslot } from '../../time-slot/entity/specific-time-slot.entity';
 
 @Entity()
 @Index(['email'], {
@@ -16,7 +16,7 @@ export class User extends CommonEntity {
   @Column({ name: 'email' })
   public email: string;
 
-  @Column({ select: false, nullable: true })
+  @Column({ nullable: true })
   @Exclude()
   public password: string;
 
@@ -29,20 +29,20 @@ export class User extends CommonEntity {
   @Column({ default: false })
   public isRegisteredWithGoogle: boolean;
 
+  @Column({ default: 'client' })
+  public role: string;
+
+  @Column({ default: false })
+  public roleApproved: boolean;
+
   @Column({ nullable: true })
   public phoneNumber?: string;
 
-  @ManyToMany(() => Service, (service: Service) => service.users, {
-    // eager: true,
-    cascade: true,
-  })
+  @ManyToMany(() => Service, (service: Service) => service.users)
   @JoinTable()
   public services: Service[];
 
-  @ManyToMany(() => Speciality, (speciality: Speciality) => speciality.users, {
-    //eager: true,
-    cascade: true,
-  })
+  @ManyToMany(() => Speciality, (speciality: Speciality) => speciality.users)
   @JoinTable()
   public specialities: Speciality[];
 
@@ -61,14 +61,14 @@ export class User extends CommonEntity {
   public clientAppointments: Appointment[];
 
   @ManyToMany(
-    () => UsualTimeSlotEntity,
-    (usualTimeSlot: UsualTimeSlotEntity) => usualTimeSlot.specialists,
+    () => UsualTimeslot,
+    (usualTimeSlot: UsualTimeslot) => usualTimeSlot.specialists,
   )
-  public usualTimeSlots: UsualTimeSlotEntity[];
+  public usualTimeSlots: UsualTimeslot[];
 
   @ManyToMany(
-    () => SpecificTimeSlotEntity,
-    (specificTimeSlot: SpecificTimeSlotEntity) => specificTimeSlot.specialists,
+    () => SpecificTimeslot,
+    (specificTimeSlot: SpecificTimeslot) => specificTimeSlot.specialists,
   )
-  public specificTimeSlots: SpecificTimeSlotEntity[];
+  public specificTimeSlots: SpecificTimeslot[];
 }
