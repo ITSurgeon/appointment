@@ -3,25 +3,45 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { TimeSlotService } from './time-slot.service';
 import { CreateUsualTimeSlotDto } from './dto/create-usual-time-slot.dto';
 import { CreateSpecificTimeSlotDto } from './dto/create-specific-time-slot.dto';
 import { FindManyTimeSlotsDto } from './dto/find-many-time-slots.dto';
 import { UpdateAppointmentDto } from '../appointment/dto/update-appointment.dto';
+import { CookieAuthenticationGuard } from '../authentication/cookieAuthentication.guard';
+import RequestWithUser from '../authentication/requestWithUser.interface';
+import { User } from '../user/entities/user.entity';
 
 @Controller('time-slot')
 export class TimeSlotController {
   constructor(private readonly timeSlotService: TimeSlotService) {}
 
+  @HttpCode(200)
+  @UseGuards(CookieAuthenticationGuard)
   @Post('usual')
-  createUsualTimeSlot(@Body() createUsualTimeSlotDto: CreateUsualTimeSlotDto) {
-    return this.timeSlotService.createUsualTimeSlot(createUsualTimeSlotDto);
+  createUsualTimeSlot(
+    @Req() request: RequestWithUser,
+    @Body() createUsualTimeSlotDto: [CreateUsualTimeSlotDto],
+  ) {
+    const { id } = request.user;
+    return this.timeSlotService.createUsualTimeSlot(id, createUsualTimeSlotDto);
   }
+
+  @HttpCode(200)
+  @UseGuards(CookieAuthenticationGuard)
+  @Get()
+  async authenticate(@Req() request: RequestWithUser): Promise<User> {
+    return request.user;
+  }
+
   @Post('specific')
   createSpecificTimeSlot(
     @Body() createSpecificTimeSlotDto: CreateSpecificTimeSlotDto,

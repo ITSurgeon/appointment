@@ -25,6 +25,7 @@ export class Appointment extends CommonEntity {
   @ManyToMany(
     () => SpecificTimeslot,
     (specificTimeSlot: SpecificTimeslot) => specificTimeSlot.appointments,
+    { cascade: true },
   )
   @JoinTable()
   public specificTimeSlots: SpecificTimeslot[];

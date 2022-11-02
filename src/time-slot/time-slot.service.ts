@@ -22,10 +22,22 @@ export class TimeSlotService extends EntityService {
     super();
   }
 
-  async createUsualTimeSlot(
-    definition: DeepPartial<UsualTimeslot>,
-  ): Promise<UsualTimeslot> {
-    return await this.usualTimeSlotRepository.save(definition);
+  async createUsualTimeSlot(userId, timeSlots) {
+    for (const timeSlot of timeSlots) {
+      timeSlot.specialists = [{ id: userId }];
+      await this.usualTimeSlotRepository.save(timeSlot);
+    }
+    return this.usualTimeSlotRepository.find({
+      relations: ['specialists'],
+      where: { specialists: { id: userId } },
+      select: {
+        id: true,
+        dayOfWeek: true,
+        timeStart: true,
+        timeEnd: true,
+        specialists: { id: true, firstName: true, lastName: true },
+      },
+    });
   }
 
   async findManyUsualTimeSlots(
@@ -61,7 +73,6 @@ export class TimeSlotService extends EntityService {
       'specialists.lastName',
     ]);
 
-    //  this.paginate(builder, paginationQuery);
     const totalCount = await builder.getCount();
     const entities: UsualTimeslot[] = await builder.getMany();
     return { totalCount, entities };
@@ -111,20 +122,20 @@ export class TimeSlotService extends EntityService {
           specialists: [{ id: specialistId }],
         },
       });
-    usualTimeSlots.forEach((usualTimeSlot) => {
+    for (const usualTimeSlot of usualTimeSlots) {
       const newSlot: SpecificTimeslot = this.specificTimeSlotRepository.create({
         dateTimeStart: new Date(`${date}T${usualTimeSlot.timeStart}`),
         dateTimeEnd: new Date(`${date}T${usualTimeSlot.timeEnd}`),
-        usualTimeSlots: [usualTimeSlot],
+        usualTimeSlots: [{ id: usualTimeSlot.id }],
         specialists: [{ id: specialistId }],
       });
-      this.specificTimeSlotRepository.save(newSlot);
-    });
+      await this.specificTimeSlotRepository.save(newSlot);
+    }
     return await this.specificTimeSlotRepository.find({
       relations: ['specialists', 'usualTimeSlots'],
       where: {
-        specialists: { id: specialistId },
-        usualTimeSlots: { dayOfWeek: dow },
+        specialists: [{ id: specialistId }],
+        usualTimeSlots: [{ dayOfWeek: dow }],
       },
       order: {
         id: 'DESC',
@@ -146,7 +157,7 @@ export class TimeSlotService extends EntityService {
       this.specificTimeSlotRepository.createQueryBuilder('specificTimeSlot');
 
     builder.leftJoinAndSelect('specificTimeSlot.specialists', 'specialists');
-    builder.leftJoinAndSelect('specificTimeSlot.appointments', 'appointments');
+    // builder.leftJoinAndSelect('specificTimeSlot.appointments', 'appointments');
 
     if (relationsQuery && Object.keys(relationsQuery).length > 0) {
       this.filterByRelation(builder, relationsQuery);
@@ -157,18 +168,15 @@ export class TimeSlotService extends EntityService {
     }
     builder.select([
       'specificTimeSlot.id',
-      'specificTimeSlot.dayOfWeek',
-      'specificTimeSlot.timeStart',
-      'specificTimeSlot.timeEnd',
+      'specificTimeSlot.dateTimeStart',
+      'specificTimeSlot.dateTimeEnd',
+      'specificTimeSlot.working',
+      'specificTimeSlot.available',
       'specialists.id',
       'specialists.firstName',
       'specialists.lastName',
-      'specialists.comment',
-      'appointments.id',
-      'appointments.clients',
     ]);
 
-    //this.paginate(builder, paginationQuery);
     const totalCount = await builder.getCount();
     const entities: SpecificTimeslot[] = await builder.getMany();
     return { totalCount, entities };

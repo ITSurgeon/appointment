@@ -8,14 +8,15 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import CreateUserDto from './dto/create-user.dto';
 import { FindManyUsersDto } from './dto/find-many-users.dto';
 import { UserSearchResultInterface } from '../types/userSearchResult.interface';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { CookieAuthenticationGuard } from '../authentication/cookieAuthentication.guard';
 import { ChangeRoleDto } from '../authentication/dto/change-role.dto';
+import RequestWithUser from '../authentication/requestWithUser.interface';
 
 @Controller('user')
 export class UserController {
@@ -46,18 +47,18 @@ export class UserController {
     return this.userService.getById(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  //   return this.userService.update(+id, updateUserDto);
+  // }
 
   @HttpCode(200)
   @UseGuards(CookieAuthenticationGuard)
-  @Patch(':id/become-specialist')
+  @Patch('become-specialist')
   async becomeSpecialist(
-    @Param('id') id: number,
+    @Req() request: RequestWithUser,
     @Body() changeRoleDto: ChangeRoleDto,
   ) {
-    return await this.userService.becomeSpecialist(id, changeRoleDto);
+    return await this.userService.becomeSpecialist(request.user, changeRoleDto);
   }
 }

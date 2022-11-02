@@ -22,11 +22,10 @@ export class AppointmentService extends EntityService {
     super();
   }
 
-  async create(definition): Promise<Appointment> {
-    const { specificTimeSlotId, clientId, specialistId, serviceId, comment } =
-      definition;
+  async create(user, definition): Promise<Appointment> {
+    const { specificTimeSlotId, specialistId, serviceId, comment } = definition;
     const appointment: Appointment = this.appointmentRepository.create({
-      clients: [{ id: clientId }],
+      clients: [{ id: user.id }],
       specialists: [{ id: specialistId }],
       services: [{ id: serviceId }],
       specificTimeSlots: [{ id: specificTimeSlotId }],
@@ -42,6 +41,7 @@ export class AppointmentService extends EntityService {
   }
 
   async findManyAppointments(
+    user,
     query,
   ): Promise<{ entities: Appointment[]; totalCount: number }> {
     const preQuery = { page: 1, limit: 9, ...query };
@@ -61,7 +61,7 @@ export class AppointmentService extends EntityService {
       'appointment.specificTimeSlots',
       'specificTimeSlots',
     );
-
+    builder.andWhere('clients.id = :userId', { userId: user.id });
     if (relationsQuery && Object.keys(relationsQuery).length > 0) {
       this.filterByRelation(builder, relationsQuery);
     }
@@ -71,9 +71,8 @@ export class AppointmentService extends EntityService {
     }
 
     builder.select([
-      'appointment.dateTime',
-      'appointment.comment',
       'appointment.id',
+      'appointment.comment',
       'clients.id',
       'clients.firstName',
       'clients.lastName',

@@ -6,10 +6,10 @@ import { UsualTimeslot } from './usual-time-slot.entity';
 
 @Entity()
 export class SpecificTimeslot extends CommonEntity {
-  @Column({ type: 'timestamptz', nullable: true })
+  @Column({ type: 'timestamp without time zone', nullable: true })
   dateTimeStart: Date;
 
-  @Column({ type: 'timestamptz', nullable: true })
+  @Column({ type: 'timestamp without time zone', nullable: true })
   dateTimeEnd: Date;
 
   @Column({ default: true })

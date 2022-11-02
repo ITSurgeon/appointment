@@ -5,6 +5,7 @@ import { User } from './entities/user.entity';
 import { EntityService } from '../common/entity.service';
 import { Speciality } from '../speciality/entity/speciality.entity';
 import { Service } from '../service/entity/service.entity';
+import { ChangeRoleDto } from '../authentication/dto/change-role.dto';
 
 @Injectable()
 export class UserService extends EntityService {
@@ -107,22 +108,21 @@ export class UserService extends EntityService {
     return await this.userRepository.update(id, definition);
   }
 
-  async becomeSpecialist(id: number, definition) {
-    const user = await this.userRepository.findOne({
-      where: { id },
-      relations: ['specialities', 'services'],
+  async becomeSpecialist(user, changeRoleDto: ChangeRoleDto) {
+    const { role, specialityId, serviceId } = changeRoleDto;
+    // const user: User = await this.userRepository.findOne({
+    //   where: { id },
+    //   relations: ['specialities', 'services'],
+    // });
+    user.role = role;
+    const speciality: Speciality = await this.specialityRepository.findOne({
+      where: { id: specialityId },
     });
-    user.role = definition.role;
-    user.specialities = [
-      await this.specialityRepository.findOne({
-        where: { id: definition.specialityId },
-      }),
-    ];
-    user.services = [
-      await this.serviceRepository.findOne({
-        where: { id: definition.services },
-      }),
-    ];
+    user.specialities = [speciality];
+    const service = await this.serviceRepository.findOne({
+      where: { id: serviceId },
+    });
+    user.services = [service];
     return this.userRepository.save(user);
   }
 }

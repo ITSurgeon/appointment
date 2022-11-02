@@ -4,5 +4,5 @@ export class CreateUsualTimeSlotDto {
   dayOfWeek: number;
   timeStart: Date;
   timeEnd: Date;
-  specialists: User[];
+  specialists?: User[];
 }
