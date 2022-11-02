@@ -1,24 +1,14 @@
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  Index,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, ManyToMany } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { Exclude } from 'class-transformer';
+import { CommonEntity } from '../../common/common.entity';
+import { Appointment } from '../../appointment/entity/appointment.entity';
 
 @Entity()
 @Index(['name'], {
   unique: true,
   where: '"deletedAt" IS NULL',
 })
-export class Service {
-  @PrimaryGeneratedColumn()
-  public id: number;
-
+export class Service extends CommonEntity {
   @Column()
   public name: string;
 
@@ -31,11 +21,6 @@ export class Service {
   @ManyToMany(() => User, (user: User) => user.services)
   public users: User[];
 
-  @CreateDateColumn()
-  @Exclude()
-  public createdAt: Date;
-
-  @DeleteDateColumn()
-  @Exclude()
-  public deletedAt: Date;
+  @ManyToMany(() => User, (user: User) => user.services)
+  public appointments: Appointment[];
 }

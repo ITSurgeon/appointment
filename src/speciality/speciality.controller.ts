@@ -11,8 +11,8 @@ import {
 import { SpecialityService } from './speciality.service';
 import { CreateSpecialityDto } from './dto/create-speciality.dto';
 import { UpdateSpecialityDto } from './dto/update-speciality.dto';
-import { Speciality } from './entity/speciality.entity';
 import { FindManySpecialitiesDto } from './dto/find-many-specialities.dto';
+import { SpecialitySearchResultInterface } from '../types/specialitySearchResultInterface';
 
 @Controller('speciality')
 export class SpecialityController {
@@ -24,18 +24,16 @@ export class SpecialityController {
   }
 
   @Get()
-  async findMany(@Query() query: FindManySpecialitiesDto): Promise<{
-    data: { specialities: Speciality[]; totalCount: any; currentPage: number };
-  }> {
+  async findMany(
+    @Query() query: FindManySpecialitiesDto,
+  ): Promise<SpecialitySearchResultInterface> {
     const { totalCount, entities } =
       await this.specialityService.findManySpecialities(query);
 
     return {
-      data: {
-        specialities: entities,
-        totalCount,
-        currentPage: query.page || 1,
-      },
+      specialities: entities,
+      totalCount,
+      currentPage: query.page || 1,
     };
   }
 

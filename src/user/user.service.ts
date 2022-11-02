@@ -3,12 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, Repository, SelectQueryBuilder } from 'typeorm';
 import { User } from './entities/user.entity';
 import { EntityService } from '../common/entity.service';
+import { Speciality } from '../speciality/entity/speciality.entity';
+import { Service } from '../service/entity/service.entity';
+import { ChangeRoleDto } from '../authentication/dto/change-role.dto';
 
 @Injectable()
 export class UserService extends EntityService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Speciality)
+    private specialityRepository: Repository<Speciality>,
+    @InjectRepository(Service)
+    private serviceRepository: Repository<Service>,
   ) {
     super();
   }
@@ -63,7 +70,17 @@ export class UserService extends EntityService {
   }
 
   async getById(id: number): Promise<User> {
-    const user: User | null = await this.userRepository.findOneBy({ id });
+    const user: User | null = await this.userRepository.findOne({
+      where: { id },
+      relations: [
+        'specialities',
+        'services',
+        'clientAppointments',
+        'specialistAppointments',
+        'usualTimeSlots',
+        'specificTimeSlots',
+      ],
+    });
     if (user) {
       return user;
     }
@@ -85,5 +102,27 @@ export class UserService extends EntityService {
       );
     }
     return await this.userRepository.save(definition);
+  }
+
+  async update(id: number, definition: DeepPartial<User>) {
+    return await this.userRepository.update(id, definition);
+  }
+
+  async becomeSpecialist(user, changeRoleDto: ChangeRoleDto) {
+    const { role, specialityId, serviceId } = changeRoleDto;
+    // const user: User = await this.userRepository.findOne({
+    //   where: { id },
+    //   relations: ['specialities', 'services'],
+    // });
+    user.role = role;
+    const speciality: Speciality = await this.specialityRepository.findOne({
+      where: { id: specialityId },
+    });
+    user.specialities = [speciality];
+    const service = await this.serviceRepository.findOne({
+      where: { id: serviceId },
+    });
+    user.services = [service];
+    return this.userRepository.save(user);
   }
 }

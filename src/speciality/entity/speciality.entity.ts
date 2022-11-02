@@ -1,25 +1,13 @@
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  Index,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, Index, ManyToMany } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { Exclude } from 'class-transformer';
+import { CommonEntity } from '../../common/common.entity';
 
 @Entity()
 @Index(['name'], {
   unique: true,
   where: '"deletedAt" IS NULL',
 })
-export class Speciality {
-  @PrimaryGeneratedColumn()
-  public id: number;
-
+export class Speciality extends CommonEntity {
   @Column()
   public name: string;
 
@@ -28,16 +16,4 @@ export class Speciality {
 
   @ManyToMany(() => User, (user: User) => user.specialities)
   public users: User[];
-
-  @CreateDateColumn()
-  @Exclude()
-  public createdAt: Date;
-
-  @UpdateDateColumn()
-  @Exclude()
-  updatedAt: Date;
-
-  @DeleteDateColumn()
-  @Exclude()
-  public deletedAt: Date;
 }

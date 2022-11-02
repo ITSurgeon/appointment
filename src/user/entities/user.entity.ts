@@ -1,27 +1,18 @@
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  Index,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Service } from '../../service/entity/service.entity';
 import { Speciality } from '../../speciality/entity/speciality.entity';
+import { CommonEntity } from '../../common/common.entity';
+import { Appointment } from '../../appointment/entity/appointment.entity';
+import { UsualTimeslot } from '../../time-slot/entity/usual-time-slot.entity';
+import { SpecificTimeslot } from '../../time-slot/entity/specific-time-slot.entity';
 
 @Entity()
 @Index(['email'], {
   unique: true,
   where: '"deletedAt" IS NULL',
 })
-export class User {
-  @PrimaryGeneratedColumn()
-  public id: number;
-
+export class User extends CommonEntity {
   @Column({ name: 'email' })
   public email: string;
 
@@ -38,32 +29,46 @@ export class User {
   @Column({ default: false })
   public isRegisteredWithGoogle: boolean;
 
+  @Column({ default: 'client' })
+  public role: string;
+
+  @Column({ default: false })
+  public roleApproved: boolean;
+
   @Column({ nullable: true })
   public phoneNumber?: string;
 
-  @CreateDateColumn()
-  @Exclude()
-  public createdAt: Date;
-
-  @DeleteDateColumn()
-  @Exclude()
-  public deletedAt: Date;
-
-  @UpdateDateColumn()
-  @Exclude()
-  updatedAt: Date;
-
-  @ManyToMany(() => Service, (service: Service) => service.users, {
-    eager: true,
-    cascade: true,
-  })
+  @ManyToMany(() => Service, (service: Service) => service.users)
   @JoinTable()
   public services: Service[];
 
-  @ManyToMany(() => Speciality, (speciality: Speciality) => speciality.users, {
-    eager: true,
-    cascade: true,
-  })
+  @ManyToMany(() => Speciality, (speciality: Speciality) => speciality.users)
   @JoinTable()
   public specialities: Speciality[];
+
+  @ManyToMany(
+    () => Appointment,
+    (appointment: Appointment) => appointment.specialists,
+  )
+  @JoinTable()
+  public specialistAppointments: Appointment[];
+
+  @ManyToMany(
+    () => Appointment,
+    (appointment: Appointment) => appointment.clients,
+  )
+  @JoinTable()
+  public clientAppointments: Appointment[];
+
+  @ManyToMany(
+    () => UsualTimeslot,
+    (usualTimeSlot: UsualTimeslot) => usualTimeSlot.specialists,
+  )
+  public usualTimeSlots: UsualTimeslot[];
+
+  @ManyToMany(
+    () => SpecificTimeslot,
+    (specificTimeSlot: SpecificTimeslot) => specificTimeSlot.specialists,
+  )
+  public specificTimeSlots: SpecificTimeslot[];
 }
